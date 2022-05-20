@@ -60,7 +60,7 @@ routes.get('/api/products/:uid', async (req,res) => {
 routes.post('/api/products', async (req,res) => {
    try{
       const product = req.body;
-      Api.insert(product.no, product.name, product.price);
+      Api.insert(product.no, product.name, product.price, product.barCode);
       return res.status(SuccessCode.Created).json(product);
    } catch(e) {
       console.error('could not insert');
@@ -71,7 +71,7 @@ routes.put('/api/products/:uid',async (req, res)=>{
    try{
       const product = req.body;
       console.log(product)
-      Api.UpdateProduct(req.params.uid, product.name, product.price)
+      Api.UpdateProduct(req.params.uid, product.name, product.price, product.barCode)
       return res.status(SuccessCode.OK).json("updated")
    }catch(e){
       console.error('could not update')

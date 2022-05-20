@@ -87,7 +87,7 @@ routes.get('/api/products/:uid', (req, res) => __awaiter(void 0, void 0, void 0,
 routes.post('/api/products', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const product = req.body;
-        Api_1.Api.insert(product.no, product.name, product.price);
+        Api_1.Api.insert(product.no, product.name, product.price, product.barCode);
         return res.status(SuccessCode_1.SuccessCode.Created).json(product);
     }
     catch (e) {
@@ -99,7 +99,7 @@ routes.put('/api/products/:uid', (req, res) => __awaiter(void 0, void 0, void 0,
     try {
         const product = req.body;
         console.log(product);
-        Api_1.Api.UpdateProduct(req.params.uid, product.name, product.price);
+        Api_1.Api.UpdateProduct(req.params.uid, product.name, product.price, product.barCode);
         return res.status(SuccessCode_1.SuccessCode.OK).json("updated");
     }
     catch (e) {

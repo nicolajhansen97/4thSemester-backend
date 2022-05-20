@@ -20,12 +20,13 @@ class Api {
             return customers;
         });
     }
-    static insert(no, name, price) {
+    static insert(no, name, price, barCode) {
         return __awaiter(this, void 0, void 0, function* () {
             const product = new Product_1.Product({
                 no,
                 name,
                 price,
+                barCode
             });
             yield product.save();
             return true;
@@ -37,11 +38,12 @@ class Api {
             return customer;
         });
     }
-    static UpdateProduct(id, name, price) {
+    static UpdateProduct(id, name, price, barCode) {
         return __awaiter(this, void 0, void 0, function* () {
             const product = yield Product_1.Product.findOne({ "no": id });
             product.name = name;
             product.price = price;
+            product.barCode = barCode;
             yield product.save();
         });
     }

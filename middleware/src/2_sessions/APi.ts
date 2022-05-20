@@ -10,11 +10,12 @@ class Api {
         return customers;
     }
 
-    static async insert(no:string,name:string, price:number):Promise<boolean>{
+    static async insert(no:string,name:string, price:number, barCode:string):Promise<boolean>{
         const product: IProduct = new Product({
             no,
             name,
             price,
+            barCode
         });
         await product.save();
         return true;
@@ -25,10 +26,11 @@ class Api {
         return customer;
     }
 
-    static async UpdateProduct(id:string, name:string, price:number):Promise<any>{
+    static async UpdateProduct(id:string, name:string, price:number, barCode:string):Promise<any>{
         const product = await Product.findOne({"no":id})
         product.name = name;
         product.price = price;
+        product.barCode = barCode;
         await product.save();
     }
 
