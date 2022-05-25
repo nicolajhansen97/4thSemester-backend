@@ -65,21 +65,11 @@ const urlencode = bodyParser.urlencoded({ extended: true });
 DB_1.DB.connect();
 // #1 getAll
 routes.get('/api/products', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // const data=Array();
-    //  data.push({'no':33,'name':'coffee','price':45});
-    //   data.push({'no':45,'name':'milk','price':12});
-    //  return res.status(200).json(data);
     const products = yield Api_1.Api.getProducts();
     return res.status(SuccessCode_1.SuccessCode.OK).json(products);
 }));
 // #2 getById
 routes.get('/api/products/:uid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // const data1={'no':78,'name':'sugar','price':37};
-    // const data2={'no':79,'name':'flour','price':31};
-    // if (req.params.uid==='5')
-    //  return res.status(200).json(data1);
-    // else if (req.params.uid==='6')
-    //  return res.status(200).json(data2);
     const product = yield Api_1.Api.GetsingelProduct(req.params.uid);
     return res.status(SuccessCode_1.SuccessCode.OK).json(product);
 }));

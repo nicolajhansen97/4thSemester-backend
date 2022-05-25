@@ -37,22 +37,11 @@ DB.connect();
 
 // #1 getAll
 routes.get('/api/products', async (req,res) => {
-       // const data=Array();
-      //  data.push({'no':33,'name':'coffee','price':45});
-     //   data.push({'no':45,'name':'milk','price':12});
-      //  return res.status(200).json(data);
-
-        const products:Promise<IProduct[]> = await Api.getProducts();
+      const products:Promise<IProduct[]> = await Api.getProducts();
       return res.status(SuccessCode.OK).json(products);
 });
 // #2 getById
 routes.get('/api/products/:uid', async (req,res) => {
-        // const data1={'no':78,'name':'sugar','price':37};
-        // const data2={'no':79,'name':'flour','price':31};
-        // if (req.params.uid==='5')
-         //  return res.status(200).json(data1);
-        // else if (req.params.uid==='6')
-         //  return res.status(200).json(data2);
          const product:Promise<IProduct> = await Api.GetsingelProduct(req.params.uid);
         return res.status(SuccessCode.OK).json(product);
 });
