@@ -64,28 +64,28 @@ const urlencode = bodyParser.urlencoded({ extended: true });
 */
 DB_1.DB.connect();
 // #1 getAll
-routes.get('/api/products', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const products = yield Api_1.Api.getProducts();
+routes.get('/api/Trees', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const products = yield Api_1.Api.getTrees();
     return res.status(SuccessCode_1.SuccessCode.OK).json(products);
 }));
 // #2 getById
-routes.get('/api/products/:uid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+routes.get('/api/Trees/:uid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const product = yield Api_1.Api.GetsingelProduct(req.params.uid);
     return res.status(SuccessCode_1.SuccessCode.OK).json(product);
 }));
 // #3 insert record
-routes.post('/api/products', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+routes.post('/api/Trees', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const product = req.body;
-        Api_1.Api.insert(product.no, product.name, product.price, product.barCode);
-        return res.status(SuccessCode_1.SuccessCode.Created).json(product);
+        const tree = req.body;
+        Api_1.Api.insertTree(tree.TreeType, tree.HumidityMin, tree.HumidityMax, tree.TempMin, tree.TempMax, tree.UserId, tree.BarCode);
+        return res.status(SuccessCode_1.SuccessCode.Created).json(tree);
     }
     catch (e) {
         console.error('could not insert');
     }
 }));
 // #4 update
-routes.put('/api/products/:uid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+routes.put('/api/Trees/:uid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const product = req.body;
         console.log(product);
@@ -97,7 +97,7 @@ routes.put('/api/products/:uid', (req, res) => __awaiter(void 0, void 0, void 0,
     }
 }));
 // #5 delete
-routes.delete('/api/products/:uid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+routes.delete('/api/Trees/:uid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     Api_1.Api.DeleteProduct(req.params.uid);
     return res.status(SuccessCode_1.SuccessCode.Created).json("Deleted");
 }));

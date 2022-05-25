@@ -13,22 +13,28 @@ exports.Api = void 0;
 const User_1 = require("../3_models/User");
 const Product_1 = require("../3_models/Product");
 const Encryption_1 = require("./Encryption");
+const TreeModel_1 = require("../3_models/TreeModel");
 class Api {
-    static getProducts() {
+    // Tree Crud
+    static getTrees() {
         return __awaiter(this, void 0, void 0, function* () {
-            const customers = yield Product_1.Product.find({}, { _id: 0, __v: 0 });
-            return customers;
+            const Trees = yield TreeModel_1.TreeModel.find({}, { _id: 0, __v: 0 });
+            return Trees;
         });
     }
-    static insert(no, name, price, barCode) {
+    static insertTree(TreeType, HumidityMin, HumidityMax, TempMin, TempMax, UserId, BarCode) {
         return __awaiter(this, void 0, void 0, function* () {
-            const product = new Product_1.Product({
-                no,
-                name,
-                price,
-                barCode
+            const tree = new TreeModel_1.TreeModel({
+                No: "1",
+                TreeType,
+                HumidityMin,
+                HumidityMax,
+                TempMin,
+                TempMax,
+                UserId,
+                BarCode
             });
-            yield product.save();
+            yield tree.save();
             return true;
         });
     }
@@ -53,6 +59,8 @@ class Api {
             return true;
         });
     }
+    // Datalogger
+    // Measuerments
     static Register(userName, password, email, telephone) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

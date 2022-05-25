@@ -36,106 +36,118 @@ const urlencode = bodyParser.urlencoded({ extended: true });
 DB.connect();
 
 // #1 getAll
-routes.get('/api/products', async (req,res) => {
-      const products:Promise<IProduct[]> = await Api.getProducts();
-      return res.status(SuccessCode.OK).json(products);
+routes.get('/api/Trees', async (req, res) => {
+   const products: Promise<IProduct[]> = await Api.getTrees();
+   return res.status(SuccessCode.OK).json(products);
 });
 // #2 getById
-routes.get('/api/products/:uid', async (req,res) => {
-         const product:Promise<IProduct> = await Api.GetsingelProduct(req.params.uid);
-        return res.status(SuccessCode.OK).json(product);
+routes.get('/api/Trees/:uid', async (req, res) => {
+   const product: Promise<IProduct> = await Api.GetsingelProduct(req.params.uid);
+   return res.status(SuccessCode.OK).json(product);
 });
 // #3 insert record
-routes.post('/api/products', async (req,res) => {
-   try{
-      const product = req.body;
-      Api.insert(product.no, product.name, product.price, product.barCode);
-      return res.status(SuccessCode.Created).json(product);
-   } catch(e) {
+routes.post('/api/Trees', async (req, res) => {
+   try {
+      const tree = req.body;
+      Api.insertTree(
+         tree.TreeType,
+         tree.HumidityMin,
+         tree.HumidityMax,
+         tree.TempMin,
+         tree.TempMax,
+         tree.UserId,
+         tree.BarCode
+      );
+      return res.status(SuccessCode.Created).json(tree);
+   } catch (e) {
       console.error('could not insert');
    }
 })
 // #4 update
-routes.put('/api/products/:uid',async (req, res)=>{
-   try{
+routes.put('/api/Trees/:uid', async (req, res) => {
+   try {
       const product = req.body;
       console.log(product)
       Api.UpdateProduct(req.params.uid, product.name, product.price, product.barCode)
       return res.status(SuccessCode.OK).json("updated")
-   }catch(e){
+   } catch (e) {
       console.error('could not update')
    }
 })
 // #5 delete
-routes.delete('/api/products/:uid', async (req, res) =>{
+routes.delete('/api/Trees/:uid', async (req, res) => {
    Api.DeleteProduct(req.params.uid);
    return res.status(SuccessCode.Created).json("Deleted")
 }
 )
+
+
+
+
 /*       AUTHORIZATION DEMO     */
-routes.get('/value', (req,res) => {
+routes.get('/value', (req, res) => {
 
-       // Just proving that the secret i accessable!!!
-       const key = process.env.TOKEN_SECRET;
-       console.log("The secret key was:" + key);
+   // Just proving that the secret i accessable!!!
+   const key = process.env.TOKEN_SECRET;
+   console.log("The secret key was:" + key);
 
-       const adminToken:string = AccessToken.generateToken(Role.admin);
+   const adminToken: string = AccessToken.generateToken(Role.admin);
 
-       const decryptedAdminRole:Role = AccessToken.userRole(adminToken);
+   const decryptedAdminRole: Role = AccessToken.userRole(adminToken);
 
-       const regularToken:string = AccessToken.generateToken(Role.regular);
+   const regularToken: string = AccessToken.generateToken(Role.regular);
 
-       const decryptedRegularRole:Role = AccessToken.userRole(regularToken);
+   const decryptedRegularRole: Role = AccessToken.userRole(regularToken);
 
-       return res.status(SuccessCode.OK).json({'done':'yes'});
+   return res.status(SuccessCode.OK).json({ 'done': 'yes' });
 });
 
-routes.post('/api/logon', (req,res)=>{
-   return LoginEndpoint.evaluate(req,res);
+routes.post('/api/logon', (req, res) => {
+   return LoginEndpoint.evaluate(req, res);
 });
 
- routes.post('/api/register', async (req,res) =>{
-   try{
-      const user:IUser = req.body;
-      const hasedPSW:string = await Encryption.createHash(user.password);
+routes.post('/api/register', async (req, res) => {
+   try {
+      const user: IUser = req.body;
+      const hasedPSW: string = await Encryption.createHash(user.password);
       console.log(hasedPSW);
       Api.Register(user.userName, hasedPSW, user.email, user.telephone);
       return res.status(SuccessCode.Created).json(user);
-   }catch(e){
-      console.error('post'+e);
+   } catch (e) {
+      console.error('post' + e);
    }
- })
+})
 
- routes.get('/api/bid', async (req,res) =>{
-   try{
-     const time:Date = new Date();
-     const BiddedProduct:IBiddedProduct = req.body;
-     // Api.Bid();
-     return res.status(SuccessCode.OK).json(time.getTime())
-   }catch(e){
-      console.error('post'+e);
+routes.get('/api/bid', async (req, res) => {
+   try {
+      const time: Date = new Date();
+      const BiddedProduct: IBiddedProduct = req.body;
+      // Api.Bid();
+      return res.status(SuccessCode.OK).json(time.getTime())
+   } catch (e) {
+      console.error('post' + e);
    }
- })
+})
 
- // route just for admins
- routes.get('/customers', (req,res) => {
-   try{
-      return AbstractEndpoint.produceResponse(SuccessCode.Created,Role.anonymous,Resource.customer, req,res);
-   }catch{
+// route just for admins
+routes.get('/customers', (req, res) => {
+   try {
+      return AbstractEndpoint.produceResponse(SuccessCode.Created, Role.anonymous, Resource.customer, req, res);
+   } catch {
       console.error('customer get');
    }
- });
+});
 
- routes.get('/encrypt', async (req, res) => {
-   const salt:number = 17; // The number of hashing rounds
-   const orginalText:string ="this text must be hidden";
-   const encryptedText:string = await bcrypt.hash(orginalText, salt);
+routes.get('/encrypt', async (req, res) => {
+   const salt: number = 17; // The number of hashing rounds
+   const orginalText: string = "this text must be hidden";
+   const encryptedText: string = await bcrypt.hash(orginalText, salt);
 
    console.log("Orginal: " + orginalText);
    console.log("Encrypted: " + encryptedText);
-   if (await bcrypt.compare("this text must be hidden", encryptedText)){
+   if (await bcrypt.compare("this text must be hidden", encryptedText)) {
       console.log('psw accepted')
-   }else{
+   } else {
       console.log('psw not accepted')
    }
    res.status(200).json("done")
@@ -147,32 +159,32 @@ routes.get('/sendmail', async (req, res) => {
 
    // Transporter object using SMTP transport
    const transporter = nodemailer.createTransport({
-     host: "smtp.gmail.com",
-     port: 587,
-     secure: false, // true for 465, false for other ports
-     auth: {
-       user: process.env.GMAIL_USER,
-       pass: process.env.PASSWORD,
-     },
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false, // true for 465, false for other ports
+      auth: {
+         user: process.env.GMAIL_USER,
+         pass: process.env.PASSWORD,
+      },
    });
 
    // sending mail with defined transport object
    const info = await transporter.sendMail({
-     from: '"Bobby Bricks" <bricksbobby123@gmail.com>', // sender address
-     to: "bricksbobby123@gmail.com", //
-     subject: "lololol", // subject line
-     text: "Bla bla bla", // text body
-     // html: "<p> some html </p>" // html in the body
+      from: '"Bobby Bricks" <bricksbobby123@gmail.com>', // sender address
+      to: "bricksbobby123@gmail.com", //
+      subject: "lololol", // subject line
+      text: "Bla bla bla", // text body
+      // html: "<p> some html </p>" // html in the body
    });
 
    console.log('sent message :', info.messageId);
    res.status(201).json('sent message');
- });
+});
 
 
 // the default (all other non-existing routes)
-routes.get('*', (req,res) =>{
+routes.get('*', (req, res) => {
    return res.status(404).send('no such route');
 });
 
-export {routes}
+export { routes }

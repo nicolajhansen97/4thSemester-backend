@@ -17,6 +17,6 @@ const server2 = routes_1.routes.listen(port, () => __awaiter(void 0, void 0, voi
     console.log('This server is listening at port:' + port);
 }));
 const webServer = WebSocketServer_1.server.listen(process.env.PORT || port2, () => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(`Server started on port 3001:)`);
+    console.log(`Server started on port 3001`);
 }));
 //# sourceMappingURL=launch.js.map
