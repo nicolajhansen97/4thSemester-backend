@@ -14,6 +14,7 @@ const User_1 = require("../3_models/User");
 const Product_1 = require("../3_models/Product");
 const Encryption_1 = require("./Encryption");
 const TreeModel_1 = require("../3_models/TreeModel");
+const Measuerment_1 = require("../3_models/Measuerment");
 class Api {
     // Tree Crud
     static getTrees() {
@@ -61,6 +62,21 @@ class Api {
     }
     // Datalogger
     // Measuerments
+    static insertMeasuerment(Treeno, Barcode, MeasuermentID, Humidity, Temperature, IsSoilWet, DateOfMes) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const measurment = new Measuerment_1.Measuerments({
+                Treeno: "1",
+                Barcode: "1001",
+                MeasuermentID: "1",
+                Humidity,
+                Temperature,
+                IsSoilWet,
+                DateOfMes
+            });
+            yield measurment.save();
+            return true;
+        });
+    }
     static Register(userName, password, email, telephone) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

@@ -30,6 +30,7 @@ exports.server = void 0;
 // Importing the required modules
 const express_1 = __importDefault(require("express"));
 const http = __importStar(require("http"));
+const Api_1 = require("../2_sessions/Api");
 const WebSocket = __importStar(require("ws"));
 const WebSocketServer = (0, express_1.default)();
 // initialize a simple http server
@@ -41,7 +42,18 @@ wss.on('connection', (ws) => {
     // connection is up, let's add a simple simple event
     ws.on('message', (message) => {
         // log the received message and send it back to the client
-        console.log('received: %s', message);
+        // save data if it is data
+        // console.log('received: %s', m);
+        const test = message.split('\n', 3);
+        console.log(test);
+        const wet = test[0] === "true" ? true : false;
+        const Hum = parseFloat(test[1].replace(/^\D+/g, ''));
+        const temp = parseFloat(test[2].replace(/^\D+/g, ''));
+        console.log(wet);
+        console.log(Hum);
+        console.log(temp);
+        Api_1.Api.insertMeasuerment("", "", "", Hum, temp, wet, new Date());
+        // send back that you got the data.
         ws.send(`Hello, you sent -> ${message}`);
     });
     // send immediatly a feedback to the incoming connection

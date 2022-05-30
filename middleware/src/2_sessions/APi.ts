@@ -4,7 +4,7 @@ import { nodeModuleNameResolver } from 'typescript';
 import { Product, IProduct } from '../3_models/Product';
 import { Encryption } from './Encryption';
 import { TreeModel, ITreeModel } from '../3_models/TreeModel';
-
+import { Measuerments, IMeasuerments } from '../3_models/Measuerment';
 class Api {
     // Tree Crud
     static async getTrees(): Promise<any> {
@@ -22,7 +22,7 @@ class Api {
         BarCode: string
     ): Promise<boolean> {
         const tree: ITreeModel = new TreeModel({
-            No:"1",
+            No: "1",
             TreeType,
             HumidityMin,
             HumidityMax,
@@ -57,6 +57,27 @@ class Api {
 
     // Measuerments
 
+    static async insertMeasuerment(
+        Treeno: string,
+        Barcode: string,
+        MeasuermentID: string,
+        Humidity: number,
+        Temperature: number,
+        IsSoilWet: boolean,
+        DateOfMes: Date
+    ): Promise<boolean> {
+        const measurment: IMeasuerments = new Measuerments({
+            Treeno:"1",
+            Barcode:"1001",
+            MeasuermentID:"1",
+            Humidity,
+            Temperature,
+            IsSoilWet,
+            DateOfMes
+        });
+        await measurment.save();
+        return true;
+    }
 
 
     static async Register(userName: string, password: string, email: string, telephone: string): Promise<boolean> {
