@@ -45,6 +45,12 @@ class Api {
             return customer;
         });
     }
+    static GetSingleTrewWithBarcodes(BarCode) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const tree = yield TreeModel_1.TreeModel.findOne({ "BarCode": BarCode });
+            return tree;
+        });
+    }
     static UpdateProduct(id, name, price, barCode) {
         return __awaiter(this, void 0, void 0, function* () {
             const product = yield Product_1.Product.findOne({ "no": id });
@@ -62,12 +68,18 @@ class Api {
     }
     // Datalogger
     // Measuerments
+    static getMeasurements() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const measurement = yield Measuerment_1.Measuerments.find({}, { _id: 0, __v: 0 });
+            return measurement;
+        });
+    }
     static insertMeasuerment(Treeno, Barcode, MeasuermentID, Humidity, Temperature, IsSoilWet, DateOfMes) {
         return __awaiter(this, void 0, void 0, function* () {
             const measurment = new Measuerment_1.Measuerments({
-                Treeno: "1",
-                Barcode: "1001",
-                MeasuermentID: "1",
+                Treeno,
+                Barcode,
+                MeasuermentID,
                 Humidity,
                 Temperature,
                 IsSoilWet,

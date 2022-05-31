@@ -12,6 +12,6 @@ const ProductSchema: Schema = new Schema({
     Woring: {type: Boolean, required: true}
 });
 
-const DataLogger: Model<IDataLogger> = model('Product', ProductSchema);
+const DataLogger: Model<IDataLogger> = model('DataLoggers', ProductSchema);
 
 export {DataLogger,IDataLogger}

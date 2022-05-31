@@ -40,6 +40,11 @@ class Api {
         return customer;
     }
 
+    static async GetSingleTrewWithBarcodes(BarCode: string): Promise<any> {
+        const tree: ITreeModel = await TreeModel.findOne({ "BarCode": BarCode })
+        return tree;
+    }
+
     static async UpdateProduct(id: string, name: string, price: number, barCode: string): Promise<any> {
         const product = await Product.findOne({ "no": id })
         product.name = name;
@@ -57,6 +62,11 @@ class Api {
 
     // Measuerments
 
+    static async getMeasurements(): Promise<any> {
+        const measurement: IMeasuerments[] = await Measuerments.find({}, { _id: 0, __v: 0 });
+        return measurement;
+    }
+
     static async insertMeasuerment(
         Treeno: string,
         Barcode: string,
@@ -67,9 +77,9 @@ class Api {
         DateOfMes: Date
     ): Promise<boolean> {
         const measurment: IMeasuerments = new Measuerments({
-            Treeno:"1",
-            Barcode:"1001",
-            MeasuermentID:"1",
+            Treeno,
+            Barcode,
+            MeasuermentID,
             Humidity,
             Temperature,
             IsSoilWet,
