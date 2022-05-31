@@ -7,8 +7,10 @@ const ProductSchema = new mongoose_1.Schema({
     Barcode: { type: String, required: true },
     MeasuermentID: { type: String, required: true },
     Humidity: { type: Number, required: true },
-    Temperature: { type: Number, required: true }
+    Temperature: { type: Number, required: true },
+    IsSoilWet: { type: Boolean, required: true },
+    DateOfMes: { type: Date, required: true }
 });
-const Measuerments = (0, mongoose_1.model)('Product', ProductSchema);
+const Measuerments = (0, mongoose_1.model)('Measuerments', ProductSchema);
 exports.Measuerments = Measuerments;
 //# sourceMappingURL=Measuerment.js.map
