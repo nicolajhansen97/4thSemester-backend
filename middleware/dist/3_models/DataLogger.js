@@ -7,6 +7,6 @@ const ProductSchema = new mongoose_1.Schema({
     RaspberryVer: { type: String, required: true },
     Woring: { type: Boolean, required: true }
 });
-const DataLogger = (0, mongoose_1.model)('Product', ProductSchema);
+const DataLogger = (0, mongoose_1.model)('DataLoggers', ProductSchema);
 exports.DataLogger = DataLogger;
 //# sourceMappingURL=DataLogger.js.map
