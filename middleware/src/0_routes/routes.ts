@@ -66,9 +66,15 @@ routes.post('/api/Trees', async (req, res) => {
 // #4 update
 routes.put('/api/Trees/:uid', async (req, res) => {
    try {
-      const product = req.body;
-      console.log(product)
-      Api.UpdateProduct(req.params.uid, product.name, product.price, product.barCode)
+      const tree = req.body;
+      console.log(tree)
+      Api.UpdateTree(req.params.uid, tree.TreeType,
+         tree.HumidityMin,
+         tree.HumidityMax,
+         tree.TempMin,
+         tree.TempMax,
+         tree.UserId,
+         tree.BarCode)
       return res.status(SuccessCode.OK).json("updated")
    } catch (e) {
       console.error('could not update')
@@ -76,7 +82,7 @@ routes.put('/api/Trees/:uid', async (req, res) => {
 })
 // #5 delete
 routes.delete('/api/Trees/:uid', async (req, res) => {
-   Api.DeleteProduct(req.params.uid);
+   Api.DeleteTree(req.params.uid);
    return res.status(SuccessCode.Created).json("Deleted")
 }
 )

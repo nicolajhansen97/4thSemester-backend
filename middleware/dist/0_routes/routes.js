@@ -87,9 +87,9 @@ routes.post('/api/Trees', (req, res) => __awaiter(void 0, void 0, void 0, functi
 // #4 update
 routes.put('/api/Trees/:uid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const product = req.body;
-        console.log(product);
-        Api_1.Api.UpdateProduct(req.params.uid, product.name, product.price, product.barCode);
+        const tree = req.body;
+        console.log(tree);
+        Api_1.Api.UpdateTree(req.params.uid, tree.TreeType, tree.HumidityMin, tree.HumidityMax, tree.TempMin, tree.TempMax, tree.UserId, tree.BarCode);
         return res.status(SuccessCode_1.SuccessCode.OK).json("updated");
     }
     catch (e) {
@@ -98,7 +98,7 @@ routes.put('/api/Trees/:uid', (req, res) => __awaiter(void 0, void 0, void 0, fu
 }));
 // #5 delete
 routes.delete('/api/Trees/:uid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    Api_1.Api.DeleteProduct(req.params.uid);
+    Api_1.Api.DeleteTree(req.params.uid);
     return res.status(SuccessCode_1.SuccessCode.Created).json("Deleted");
 }));
 /*       AUTHORIZATION DEMO     */

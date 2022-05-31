@@ -25,7 +25,7 @@ class Api {
     static insertTree(TreeType, HumidityMin, HumidityMax, TempMin, TempMax, UserId, BarCode) {
         return __awaiter(this, void 0, void 0, function* () {
             const tree = new TreeModel_1.TreeModel({
-                No: "1",
+                No: "2",
                 TreeType,
                 HumidityMin,
                 HumidityMax,
@@ -38,10 +38,30 @@ class Api {
             return true;
         });
     }
+    // Delete a tree
+    static DeleteTree(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield TreeModel_1.TreeModel.deleteOne({ "No": id });
+            return true;
+        });
+    }
     static GetsingelProduct(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const customer = yield Product_1.Product.findOne({ "no": id });
             return customer;
+        });
+    }
+    static UpdateTree(No, TreeType, HumidityMin, HumidityMax, TempMin, TempMax, UserId, BarCode) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const tree = yield TreeModel_1.TreeModel.findOne({ "No": No });
+            tree.TreeType = TreeType;
+            tree.HumidityMin = HumidityMin;
+            tree.HumidityMax = HumidityMax;
+            tree.TempMin = TempMin;
+            tree.TempMax = TempMax;
+            tree.UserId = UserId;
+            tree.BarCode = BarCode;
+            yield tree.save();
         });
     }
     static UpdateProduct(id, name, price, barCode) {
