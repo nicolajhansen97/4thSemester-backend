@@ -81,7 +81,8 @@ wss.on('connection', (ws) => {
             Api_1.Api.insertMeasuerment(treeNo.No, barcode, MeasuermentIDs + "", Hum, temp, wet, new Date());
         }
         else if (option === "W") {
-            console.log("Warning" + test[2]);
+            const WarningData = test[2];
+            console.log("Warning: " + WarningData);
             ws.send("ack");
         }
         else if (option === "D") {

@@ -35,6 +35,26 @@ class Api {
         return true;
     }
 
+// Delete a tree
+static async DeleteTree(id: string): Promise<any> {
+    await TreeModel.deleteOne({ "No": id })
+    return true
+}
+
+
+static async UpdateTree(No: string, TreeType: string, HumidityMin: number, HumidityMax: number, TempMin: number, TempMax: number,
+    UserId: string, BarCode: string): Promise<any> {
+    const tree = await TreeModel.findOne({ "No": No })
+    tree.TreeType = TreeType;
+    tree.HumidityMin = HumidityMin;
+    tree.HumidityMax = HumidityMax;
+    tree.TempMin = TempMin;
+    tree.TempMax = TempMax;
+    tree.UserId = UserId;
+    tree.BarCode = BarCode;
+    await tree.save();
+}
+
     static async GetsingelProduct(id: string): Promise<any> {
         const customer: IProduct = await Product.findOne({ "no": id })
         return customer;
