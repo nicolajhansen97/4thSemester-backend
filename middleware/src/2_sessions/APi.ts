@@ -65,25 +65,6 @@ static async UpdateTree(No: string, TreeType: string, HumidityMin: number, Humid
         return tree;
     }
 
-    static async UpdateTree(
-        no:string,
-        TreeType:string,
-        HumidityMin:number,
-        HumidityMax:number,
-        TempMin:number,
-        TempMax:number,
-        UserId:string,
-        BarCode:string
-        ): Promise<any> {
-        const tree = await TreeModel.findOne({ "no": no })
-        tree.TreeType = TreeType;
-        await tree.save();
-    }
-
-    static async DeleteTree(id: string): Promise<any> {
-        await TreeModel.deleteOne({ "no": id })
-        return true
-    }
 
     // Datalogger
 
