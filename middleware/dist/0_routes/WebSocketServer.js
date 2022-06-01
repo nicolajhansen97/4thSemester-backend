@@ -83,7 +83,16 @@ wss.on('connection', (ws) => {
         else if (option === "W") {
             const WarningData = test[2];
             console.log("Warning: " + WarningData);
-            ws.send("ack");
+            switch (WarningData) {
+                case "ack":
+                    ws.send("ack");
+                    break;
+                case "bad":
+                    ws.send("bad");
+                    break;
+                default:
+                    break;
+            }
         }
         else if (option === "D") {
             console.log("Data wanted");

@@ -3,7 +3,6 @@ import express from 'express';
 import * as http from 'http';
 import { Api } from '../2_sessions/Api';
 import * as WebSocket from 'ws';
-import { Measuerments } from '../3_models/Measuerment';
 
 const WebSocketServer = express();
 
@@ -55,8 +54,18 @@ wss.on('connection', (ws: WebSocket) => {
             Api.insertMeasuerment(treeNo.No, barcode, MeasuermentIDs + "", Hum, temp, wet, new Date());
         }else if (option==="W"){
             const WarningData = test[2]
-            console.log("Warning: "+WarningData)
-            ws.send("ack")
+            console.log("Warning: " + WarningData)
+
+            switch (WarningData) {
+                case "ack":
+                    ws.send("ack")
+                    break;
+                case "bad":
+                    ws.send("bad")
+                    break;
+                default:
+                    break;
+            }
         }else if (option==="D"){
             console.log("Data wanted")
 
