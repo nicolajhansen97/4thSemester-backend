@@ -13,6 +13,7 @@ class Api {
     }
 
     static async insertTree(
+        No: string,
         TreeType: string,
         HumidityMin: number,
         HumidityMax: number,
@@ -22,7 +23,7 @@ class Api {
         BarCode: string
     ): Promise<boolean> {
         const tree: ITreeModel = new TreeModel({
-            No: "1",
+            No,
             TreeType,
             HumidityMin,
             HumidityMax,

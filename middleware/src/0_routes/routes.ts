@@ -47,8 +47,18 @@ routes.get('/api/Trees/:uid', async (req, res) => {
 // #3 insert record
 routes.post('/api/Trees', async (req, res) => {
    try {
+   // Get tree NO for autoincrement
+   let max = 0;
+   const allTrees = await Api.getTrees()
+   for(const o of allTrees){
+      if(Number(o.No) > max){
+         max = Number(o.No);
+      }
+   };
+   max++;
       const tree = req.body;
       Api.insertTree(
+         max.toString(),
          tree.TreeType,
          tree.HumidityMin,
          tree.HumidityMax,

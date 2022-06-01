@@ -21,10 +21,10 @@ class Api {
             return Trees;
         });
     }
-    static insertTree(TreeType, HumidityMin, HumidityMax, TempMin, TempMax, UserId, BarCode) {
+    static insertTree(No, TreeType, HumidityMin, HumidityMax, TempMin, TempMax, UserId, BarCode) {
         return __awaiter(this, void 0, void 0, function* () {
             const tree = new TreeModel_1.TreeModel({
-                No: "1",
+                No,
                 TreeType,
                 HumidityMin,
                 HumidityMax,
@@ -67,19 +67,6 @@ class Api {
         return __awaiter(this, void 0, void 0, function* () {
             const tree = yield TreeModel_1.TreeModel.findOne({ "BarCode": BarCode });
             return tree;
-        });
-    }
-    static UpdateTree(no, TreeType, HumidityMin, HumidityMax, TempMin, TempMax, UserId, BarCode) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const tree = yield TreeModel_1.TreeModel.findOne({ "no": no });
-            tree.TreeType = TreeType;
-            yield tree.save();
-        });
-    }
-    static DeleteTree(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield TreeModel_1.TreeModel.deleteOne({ "no": id });
-            return true;
         });
     }
     // Datalogger
