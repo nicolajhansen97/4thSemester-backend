@@ -95,6 +95,21 @@ routes.delete('/api/Trees/:uid', (req, res) => __awaiter(void 0, void 0, void 0,
     Api_1.Api.DeleteTree(req.params.uid);
     return res.status(SuccessCode_1.SuccessCode.Created).json("Deleted");
 }));
+routes.post('/api/Device', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const device = req.body;
+        Api_1.Api.insertDevice(device.BarCode, "1", // device.RaspberryVer,
+        true);
+        return res.status(SuccessCode_1.SuccessCode.Created).json(device);
+    }
+    catch (e) {
+        console.error('could not insert');
+    }
+}));
+routes.get('/api/Device', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const device = yield Api_1.Api.getDevice();
+    return res.status(SuccessCode_1.SuccessCode.OK).json(device);
+}));
 /*       AUTHORIZATION DEMO     */
 routes.get('/encrypt', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const salt = 17; // The number of hashing rounds

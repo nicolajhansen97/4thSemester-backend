@@ -18,6 +18,7 @@ import { FailureCode } from '../3_models/FailureCode';
 import { IBiddedProduct } from '../3_models/BiddedProducts';
 
 import nodemailer from 'nodemailer';
+import { IDataLogger } from '../3_models/DataLogger';
 // const sendgridTransport = require('nodemailer-sendgrid-transport');
 
 dotenv.config({ path: 'config/middleware.env' });
@@ -89,7 +90,24 @@ routes.delete('/api/Trees/:uid', async (req, res) => {
 }
 )
 
+routes.post('/api/Device', async (req, res) => {
+   try {
+      const device = req.body;
+      Api.insertDevice(
+         device.BarCode,
+         "1",// device.RaspberryVer,
+         true,// device.Working
+      );
+      return res.status(SuccessCode.Created).json(device);
+   } catch (e) {
+      console.error('could not insert');
+   }
+})
 
+routes.get('/api/Device', async (req, res) => {
+   const device: Promise<IDataLogger[]> = await Api.getDevice();
+   return res.status(SuccessCode.OK).json(device);
+});
 
 
 /*       AUTHORIZATION DEMO     */

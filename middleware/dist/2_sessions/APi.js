@@ -13,6 +13,7 @@ exports.Api = void 0;
 const Product_1 = require("../3_models/Product");
 const TreeModel_1 = require("../3_models/TreeModel");
 const Measuerment_1 = require("../3_models/Measuerment");
+const DataLogger_1 = require("../3_models/DataLogger");
 class Api {
     // Tree Crud
     static getTrees() {
@@ -63,6 +64,23 @@ class Api {
         });
     }
     // Datalogger
+    static getDevice() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const device = yield DataLogger_1.DataLogger.find({}, { _id: 0, __v: 0 });
+            return device;
+        });
+    }
+    static insertDevice(BarCode, RaspberryVer, Working) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const device = new DataLogger_1.DataLogger({
+                BarCode,
+                RaspberryVer,
+                Working
+            });
+            yield device.save();
+            return true;
+        });
+    }
     // Measuerments
     static getMeasurements() {
         return __awaiter(this, void 0, void 0, function* () {

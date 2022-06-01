@@ -5,6 +5,7 @@ import { Product, IProduct } from '../3_models/Product';
 import { Encryption } from './Encryption';
 import { TreeModel, ITreeModel } from '../3_models/TreeModel';
 import { Measuerments, IMeasuerments } from '../3_models/Measuerment';
+import { IDataLogger, DataLogger } from '../3_models/DataLogger';
 class Api {
     // Tree Crud
     static async getTrees(): Promise<any> {
@@ -66,6 +67,25 @@ class Api {
     }
 
     // Datalogger
+
+	static async getDevice(): Promise<any> {
+        const device: IDataLogger[] = await DataLogger.find({}, { _id: 0, __v: 0 });
+        return device;
+    }
+
+    static async insertDevice(
+        BarCode: string,
+        RaspberryVer: string,
+        Working: boolean
+    ):Promise<boolean>{
+        const device: IDataLogger = new DataLogger({
+            BarCode,
+            RaspberryVer,
+            Working
+        });
+        await device.save();
+        return true;
+    }
 
     // Measuerments
 
