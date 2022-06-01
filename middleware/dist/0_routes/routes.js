@@ -40,16 +40,10 @@ const express_1 = __importDefault(require("express"));
 const bodyParser = __importStar(require("body-parser"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv = __importStar(require("dotenv"));
-const AccessToken_1 = require("../2_sessions/AccessToken");
-const Role_1 = require("../3_models/Role");
-const AbstractEndpoint_1 = require("../1_endpoints/AbstractEndpoint");
 const SuccessCode_1 = require("../3_models/SuccessCode");
-const Resource_1 = require("../3_models/Resource");
 const DB_1 = require("../2_sessions/DB");
 const Api_1 = require("../2_sessions/Api");
 const bcrypt_1 = __importDefault(require("bcrypt"));
-const Encryption_1 = require("../2_sessions/Encryption");
-const LoginEndpoint_1 = require("../1_endpoints/LoginEndpoint");
 const nodemailer_1 = __importDefault(require("nodemailer"));
 // const sendgridTransport = require('nodemailer-sendgrid-transport');
 dotenv.config({ path: 'config/middleware.env' });
@@ -102,51 +96,6 @@ routes.delete('/api/Trees/:uid', (req, res) => __awaiter(void 0, void 0, void 0,
     return res.status(SuccessCode_1.SuccessCode.Created).json("Deleted");
 }));
 /*       AUTHORIZATION DEMO     */
-routes.get('/value', (req, res) => {
-    // Just proving that the secret i accessable!!!
-    const key = process.env.TOKEN_SECRET;
-    console.log("The secret key was:" + key);
-    const adminToken = AccessToken_1.AccessToken.generateToken(Role_1.Role.admin);
-    const decryptedAdminRole = AccessToken_1.AccessToken.userRole(adminToken);
-    const regularToken = AccessToken_1.AccessToken.generateToken(Role_1.Role.regular);
-    const decryptedRegularRole = AccessToken_1.AccessToken.userRole(regularToken);
-    return res.status(SuccessCode_1.SuccessCode.OK).json({ 'done': 'yes' });
-});
-routes.post('/api/logon', (req, res) => {
-    return LoginEndpoint_1.LoginEndpoint.evaluate(req, res);
-});
-routes.post('/api/register', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const user = req.body;
-        const hasedPSW = yield Encryption_1.Encryption.createHash(user.password);
-        console.log(hasedPSW);
-        Api_1.Api.Register(user.userName, hasedPSW, user.email, user.telephone);
-        return res.status(SuccessCode_1.SuccessCode.Created).json(user);
-    }
-    catch (e) {
-        console.error('post' + e);
-    }
-}));
-routes.get('/api/bid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const time = new Date();
-        const BiddedProduct = req.body;
-        // Api.Bid();
-        return res.status(SuccessCode_1.SuccessCode.OK).json(time.getTime());
-    }
-    catch (e) {
-        console.error('post' + e);
-    }
-}));
-// route just for admins
-routes.get('/customers', (req, res) => {
-    try {
-        return AbstractEndpoint_1.AbstractEndpoint.produceResponse(SuccessCode_1.SuccessCode.Created, Role_1.Role.anonymous, Resource_1.Resource.customer, req, res);
-    }
-    catch (_a) {
-        console.error('customer get');
-    }
-});
 routes.get('/encrypt', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const salt = 17; // The number of hashing rounds
     const orginalText = "this text must be hidden";

@@ -45,16 +45,23 @@ class Api {
         return tree;
     }
 
-    static async UpdateProduct(id: string, name: string, price: number, barCode: string): Promise<any> {
-        const product = await Product.findOne({ "no": id })
-        product.name = name;
-        product.price = price;
-        product.barCode = barCode;
-        await product.save();
+    static async UpdateTree(
+        no:string,
+        TreeType:string,
+        HumidityMin:number,
+        HumidityMax:number,
+        TempMin:number,
+        TempMax:number,
+        UserId:string,
+        BarCode:string
+        ): Promise<any> {
+        const tree = await TreeModel.findOne({ "no": no })
+        tree.TreeType = TreeType;
+        await tree.save();
     }
 
-    static async DeleteProduct(id: string): Promise<any> {
-        await Product.deleteOne({ "no": id })
+    static async DeleteTree(id: string): Promise<any> {
+        await TreeModel.deleteOne({ "no": id })
         return true
     }
 
@@ -88,45 +95,5 @@ class Api {
         await measurment.save();
         return true;
     }
-
-
-    static async Register(userName: string, password: string, email: string, telephone: string): Promise<boolean> {
-        try {
-            const userStatus: boolean = false;
-            const user: IUser = new User({
-                userName,
-                password,
-                email,
-                telephone,
-                userStatus
-            });
-            await user.save();
-        } catch (e) {
-            console.error('API register' + e);
-        }
-        return true;
-    }
-
-    static async Login(userName: string, password: string): Promise<boolean> {
-        try {
-            const user: IUser = await User.findOne({ "userName": userName });
-            if (await Encryption.compareHash(password, user.password)) {
-                return true;
-            }
-
-        } catch (e) {
-            console.error('login ' + e)
-        }
-        return false;
-    }
-    /*
-    static async Bid():Promise<boolean>{
-        try{
-            return true;
-        }catch(e){
-
-        }
-    }
-    */
 }
 export { Api }

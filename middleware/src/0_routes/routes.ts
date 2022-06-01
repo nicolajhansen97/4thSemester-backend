@@ -15,7 +15,6 @@ import bcrypt from 'bcrypt';
 import { IUser } from '../3_models/User';
 import { Encryption } from '../2_sessions/Encryption';
 import { FailureCode } from '../3_models/FailureCode';
-import { LoginEndpoint } from '../1_endpoints/LoginEndpoint';
 import { IBiddedProduct } from '../3_models/BiddedProducts';
 
 import nodemailer from 'nodemailer';
@@ -68,13 +67,16 @@ routes.put('/api/Trees/:uid', async (req, res) => {
    try {
       const tree = req.body;
       console.log(tree)
-      Api.UpdateTree(req.params.uid, tree.TreeType,
+      Api.UpdateTree(
+         req.params.uid,
+         tree.TreeType,
          tree.HumidityMin,
          tree.HumidityMax,
          tree.TempMin,
          tree.TempMax,
          tree.UserId,
-         tree.BarCode)
+         tree.BarCode
+         )
       return res.status(SuccessCode.OK).json("updated")
    } catch (e) {
       console.error('could not update')
@@ -91,58 +93,6 @@ routes.delete('/api/Trees/:uid', async (req, res) => {
 
 
 /*       AUTHORIZATION DEMO     */
-routes.get('/value', (req, res) => {
-
-   // Just proving that the secret i accessable!!!
-   const key = process.env.TOKEN_SECRET;
-   console.log("The secret key was:" + key);
-
-   const adminToken: string = AccessToken.generateToken(Role.admin);
-
-   const decryptedAdminRole: Role = AccessToken.userRole(adminToken);
-
-   const regularToken: string = AccessToken.generateToken(Role.regular);
-
-   const decryptedRegularRole: Role = AccessToken.userRole(regularToken);
-
-   return res.status(SuccessCode.OK).json({ 'done': 'yes' });
-});
-
-routes.post('/api/logon', (req, res) => {
-   return LoginEndpoint.evaluate(req, res);
-});
-
-routes.post('/api/register', async (req, res) => {
-   try {
-      const user: IUser = req.body;
-      const hasedPSW: string = await Encryption.createHash(user.password);
-      console.log(hasedPSW);
-      Api.Register(user.userName, hasedPSW, user.email, user.telephone);
-      return res.status(SuccessCode.Created).json(user);
-   } catch (e) {
-      console.error('post' + e);
-   }
-})
-
-routes.get('/api/bid', async (req, res) => {
-   try {
-      const time: Date = new Date();
-      const BiddedProduct: IBiddedProduct = req.body;
-      // Api.Bid();
-      return res.status(SuccessCode.OK).json(time.getTime())
-   } catch (e) {
-      console.error('post' + e);
-   }
-})
-
-// route just for admins
-routes.get('/customers', (req, res) => {
-   try {
-      return AbstractEndpoint.produceResponse(SuccessCode.Created, Role.anonymous, Resource.customer, req, res);
-   } catch {
-      console.error('customer get');
-   }
-});
 
 routes.get('/encrypt', async (req, res) => {
    const salt: number = 17; // The number of hashing rounds
