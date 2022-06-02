@@ -95,7 +95,7 @@ routes.post('/api/Device', async (req, res) => {
       const device = req.body;
       Api.insertDevice(
          device.BarCode,
-         "1",// device.RaspberryVer,
+         device.RaspberryVer,
          true,// device.Working
       );
       return res.status(SuccessCode.Created).json(device);
