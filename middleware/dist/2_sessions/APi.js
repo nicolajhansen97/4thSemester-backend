@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Api = void 0;
-const Product_1 = require("../3_models/Product");
 const TreeModel_1 = require("../3_models/TreeModel");
 const Measuerment_1 = require("../3_models/Measuerment");
 const DataLogger_1 = require("../3_models/DataLogger");
@@ -22,10 +21,10 @@ class Api {
             return Trees;
         });
     }
-    static insertTree(TreeType, HumidityMin, HumidityMax, TempMin, TempMax, UserId, BarCode) {
+    static insertTree(No, TreeType, HumidityMin, HumidityMax, TempMin, TempMax, UserId, BarCode) {
         return __awaiter(this, void 0, void 0, function* () {
             const tree = new TreeModel_1.TreeModel({
-                No: "1",
+                No,
                 TreeType,
                 HumidityMin,
                 HumidityMax,
@@ -40,7 +39,7 @@ class Api {
     }
     static GetsingelProduct(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const customer = yield Product_1.Product.findOne({ "no": id });
+            const customer = yield TreeModel_1.TreeModel.findOne({ "No": id });
             return customer;
         });
     }
@@ -50,16 +49,23 @@ class Api {
             return tree;
         });
     }
-    static UpdateTree(no, TreeType, HumidityMin, HumidityMax, TempMin, TempMax, UserId, BarCode) {
+    static UpdateTree(No, TreeType, HumidityMin, HumidityMax, TempMin, TempMax, UserId, BarCode) {
         return __awaiter(this, void 0, void 0, function* () {
-            const tree = yield TreeModel_1.TreeModel.findOne({ "no": no });
+            const tree = yield TreeModel_1.TreeModel.findOne({ "No": No });
             tree.TreeType = TreeType;
+            tree.HumidityMin = HumidityMin;
+            tree.HumidityMax = HumidityMax;
+            tree.TempMin = TempMin;
+            tree.TempMax = TempMax;
+            tree.UserId = UserId;
+            tree.BarCode = BarCode;
             yield tree.save();
         });
     }
+    // Delete a tree
     static DeleteTree(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield TreeModel_1.TreeModel.deleteOne({ "no": id });
+            yield TreeModel_1.TreeModel.deleteOne({ "No": id });
             return true;
         });
     }

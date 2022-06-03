@@ -12,7 +12,7 @@ interface ITreeModel extends Document {
 }
 
 const ProductSchema: Schema = new Schema({
-  No : {type: String, required: true },
+  No : {type: String, required: false },
   TreeType : {type: String, required: true },
   HumidityMin : {type: Number, required: true },
   HumidityMax : {type: Number, required: true },

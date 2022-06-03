@@ -14,6 +14,7 @@ class Api {
     }
 
     static async insertTree(
+        No: string,
         TreeType: string,
         HumidityMin: number,
         HumidityMax: number,
@@ -23,7 +24,7 @@ class Api {
         BarCode: string
     ): Promise<boolean> {
         const tree: ITreeModel = new TreeModel({
-            No: "1",
+            No,
             TreeType,
             HumidityMin,
             HumidityMax,
@@ -37,7 +38,7 @@ class Api {
     }
 
     static async GetsingelProduct(id: string): Promise<any> {
-        const customer: IProduct = await Product.findOne({ "no": id })
+        const customer: ITreeModel = await TreeModel.findOne({ "No": id })
         return customer;
     }
 
@@ -46,25 +47,25 @@ class Api {
         return tree;
     }
 
-    static async UpdateTree(
-        no:string,
-        TreeType:string,
-        HumidityMin:number,
-        HumidityMax:number,
-        TempMin:number,
-        TempMax:number,
-        UserId:string,
-        BarCode:string
-        ): Promise<any> {
-        const tree = await TreeModel.findOne({ "no": no })
+    static async UpdateTree(No: string, TreeType: string, HumidityMin: number, HumidityMax: number, TempMin: number, TempMax: number,
+        UserId: string, BarCode: string): Promise<any> {
+        const tree = await TreeModel.findOne({ "No": No })
         tree.TreeType = TreeType;
+        tree.HumidityMin = HumidityMin;
+        tree.HumidityMax = HumidityMax;
+        tree.TempMin = TempMin;
+        tree.TempMax = TempMax;
+        tree.UserId = UserId;
+        tree.BarCode = BarCode;
         await tree.save();
     }
 
+
+    // Delete a tree
     static async DeleteTree(id: string): Promise<any> {
-        await TreeModel.deleteOne({ "no": id })
-        return true
-    }
+    await TreeModel.deleteOne({ "No": id })
+    return true
+}
 
     // Datalogger
 
