@@ -87,6 +87,11 @@ class Api {
         return true;
     }
 
+    static async DeleteDevice(Barcode: string): Promise<any> {
+        await DataLogger.deleteOne({ "BarCode": Barcode })
+        return true
+    }
+
     // Measuerments
 
     static async getMeasurements(): Promise<any> {

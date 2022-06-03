@@ -95,11 +95,26 @@ routes.delete('/api/Trees/:uid', (req, res) => __awaiter(void 0, void 0, void 0,
     Api_1.Api.DeleteTree(req.params.uid);
     return res.status(SuccessCode_1.SuccessCode.Created).json("Deleted");
 }));
+// Measuerment
+routes.get('/api/Measuerment', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const device = yield Api_1.Api.getMeasurements();
+    return res.status(SuccessCode_1.SuccessCode.OK).json(device);
+}));
+routes.post('/api/Measuerment', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const mes = req.body;
+        Api_1.Api.insertMeasuerment(mes.Treeno, mes.BarCode, mes.MeasuermentID, mes.Humidity, mes.Temperature, mes.IsSoilWet, mes.DateOfMes = new Date());
+        return res.status(SuccessCode_1.SuccessCode.Created).json(mes);
+    }
+    catch (e) {
+        console.error('could not insert');
+    }
+}));
+// DEVICE
 routes.post('/api/Device', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const device = req.body;
-        Api_1.Api.insertDevice(device.BarCode, "1", // device.RaspberryVer,
-        true);
+        Api_1.Api.insertDevice(device.BarCode, device.RaspberryVer, true);
         return res.status(SuccessCode_1.SuccessCode.Created).json(device);
     }
     catch (e) {
@@ -109,6 +124,10 @@ routes.post('/api/Device', (req, res) => __awaiter(void 0, void 0, void 0, funct
 routes.get('/api/Device', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const device = yield Api_1.Api.getDevice();
     return res.status(SuccessCode_1.SuccessCode.OK).json(device);
+}));
+routes.delete('/api/Device/:ubarcode', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    Api_1.Api.DeleteDevice(req.params.ubarcode);
+    return res.status(SuccessCode_1.SuccessCode.Created).json("Deleted");
 }));
 /*       AUTHORIZATION DEMO     */
 routes.get('/encrypt', (req, res) => __awaiter(void 0, void 0, void 0, function* () {

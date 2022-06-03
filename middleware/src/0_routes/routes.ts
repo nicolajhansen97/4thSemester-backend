@@ -19,6 +19,7 @@ import { IBiddedProduct } from '../3_models/BiddedProducts';
 
 import nodemailer from 'nodemailer';
 import { IDataLogger } from '../3_models/DataLogger';
+import { IMeasuerments } from '../3_models/Measuerment';
 // const sendgridTransport = require('nodemailer-sendgrid-transport');
 
 dotenv.config({ path: 'config/middleware.env' });
@@ -87,8 +88,34 @@ routes.put('/api/Trees/:uid', async (req, res) => {
 routes.delete('/api/Trees/:uid', async (req, res) => {
    Api.DeleteTree(req.params.uid);
    return res.status(SuccessCode.Created).json("Deleted")
-}
-)
+})
+
+// Measuerment
+
+routes.get('/api/Measuerment', async (req, res) => {
+   const device: Promise<IMeasuerments[]> = await Api.getMeasurements();
+   return res.status(SuccessCode.OK).json(device);
+});
+
+routes.post('/api/Measuerment', async (req, res) => {
+   try {
+      const mes = req.body;
+      Api.insertMeasuerment(
+         mes.Treeno,
+         mes.BarCode,
+         mes.MeasuermentID,
+         mes.Humidity,
+         mes.Temperature,
+         mes.IsSoilWet,
+         mes.DateOfMes=new Date()
+      );
+      return res.status(SuccessCode.Created).json(mes);
+   } catch (e) {
+      console.error('could not insert');
+   }
+})
+
+// DEVICE
 
 routes.post('/api/Device', async (req, res) => {
    try {
@@ -109,6 +136,10 @@ routes.get('/api/Device', async (req, res) => {
    return res.status(SuccessCode.OK).json(device);
 });
 
+routes.delete('/api/Device/:ubarcode', async (req, res) => {
+   Api.DeleteDevice(req.params.ubarcode);
+   return res.status(SuccessCode.Created).json("Deleted")
+})
 
 /*       AUTHORIZATION DEMO     */
 
