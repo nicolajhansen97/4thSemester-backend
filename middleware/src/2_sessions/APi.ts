@@ -6,6 +6,7 @@ import { Encryption } from './Encryption';
 import { TreeModel, ITreeModel } from '../3_models/TreeModel';
 import { Measuerments, IMeasuerments } from '../3_models/Measuerment';
 import { IDataLogger, DataLogger } from '../3_models/DataLogger';
+import { StringMap } from 'ts-jest';
 class Api {
     // Tree Crud
     static async getTrees(): Promise<any> {
@@ -21,7 +22,8 @@ class Api {
         TempMin: number,
         TempMax: number,
         UserId: string,
-        BarCode: string
+        BarCode: string,
+        ImageSrc: Buffer
     ): Promise<boolean> {
         const tree: ITreeModel = new TreeModel({
             No,
@@ -31,7 +33,8 @@ class Api {
             TempMin,
             TempMax,
             UserId,
-            BarCode
+            BarCode,
+            ImageSrc
         });
         await tree.save();
         return true;
@@ -48,7 +51,7 @@ class Api {
     }
 
     static async UpdateTree(No: string, TreeType: string, HumidityMin: number, HumidityMax: number, TempMin: number, TempMax: number,
-        UserId: string, BarCode: string): Promise<any> {
+        UserId: string, BarCode: string, ImageSrc: Buffer): Promise<any> {
         const tree = await TreeModel.findOne({ "No": No })
         tree.TreeType = TreeType;
         tree.HumidityMin = HumidityMin;
@@ -57,6 +60,7 @@ class Api {
         tree.TempMax = TempMax;
         tree.UserId = UserId;
         tree.BarCode = BarCode;
+        tree.ImageSrc = ImageSrc;
         await tree.save();
     }
 
@@ -101,6 +105,11 @@ class Api {
     static async DeleteDevice(Barcode: string): Promise<any> {
         await DataLogger.deleteOne({ "BarCode": Barcode })
         return true
+    }
+
+    static async GetDeviceWithBarcode(BarCode: string): Promise<any> {
+        const device: IDataLogger = await DataLogger.findOne({ "BarCode": BarCode })
+        return device;
     }
 
     // Measuerments

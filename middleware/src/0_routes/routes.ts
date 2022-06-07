@@ -67,7 +67,8 @@ routes.post('/api/Trees', async (req, res) => {
          tree.TempMin,
          tree.TempMax,
          tree.UserId,
-         tree.BarCode
+         tree.BarCode,
+         tree.ImageSrc
       );
       return res.status(SuccessCode.Created).json(tree);
    } catch (e) {
@@ -87,7 +88,8 @@ routes.put('/api/Trees/:uid', async (req, res) => {
          tree.TempMin,
          tree.TempMax,
          tree.UserId,
-         tree.BarCode
+         tree.BarCode,
+         tree.ImageSrc
          )
       return res.status(SuccessCode.OK).json("updated")
    } catch (e) {
@@ -95,27 +97,13 @@ routes.put('/api/Trees/:uid', async (req, res) => {
    }
 })
 
-routes.put('/api/Device/:uid', async (req, res) => {
-   try {
-      const device = req.body;
-      console.log(device)
-      Api.UpdateDevice(
-         req.params.uid,
-         device.BarCode,
-         device.RaspberryVer,
-         device.Working,
-         device.IsPaired
-         )
-      return res.status(SuccessCode.OK).json("updated")
-   } catch (e) {
-      console.error('could not update')
-   }
-})
-// #5 delete
+// delete
 routes.delete('/api/Trees/:uid', async (req, res) => {
    Api.DeleteTree(req.params.uid);
    return res.status(SuccessCode.Created).json("Deleted")
 })
+
+
 
 // Measuerment
 
@@ -143,7 +131,7 @@ routes.post('/api/Measuerment', async (req, res) => {
 })
 
 // DEVICE
-
+// create
 routes.post('/api/Device', async (req, res) => {
    try {
       const device = req.body;
@@ -157,15 +145,37 @@ routes.post('/api/Device', async (req, res) => {
       console.error('could not insert');
    }
 })
-
+// get
 routes.get('/api/Device', async (req, res) => {
    const device: Promise<IDataLogger[]> = await Api.getDevice();
    return res.status(SuccessCode.OK).json(device);
 });
-
+// delete
 routes.delete('/api/Device/:ubarcode', async (req, res) => {
    Api.DeleteDevice(req.params.ubarcode);
    return res.status(SuccessCode.Created).json("Deleted")
+})
+// update
+routes.put('/api/Device/:uid', async (req, res) => {
+   try {
+      const device = req.body;
+      console.log(device)
+      Api.UpdateDevice(
+         req.params.uid,
+         device.BarCode,
+         device.RaspberryVer,
+         device.Working,
+         device.IsPaired
+         )
+      return res.status(SuccessCode.OK).json("updated")
+   } catch (e) {
+      console.error('could not update')
+   }
+})
+// get with barcode
+routes.get('/api/Device/:ubarcode', async (req, res) => {
+   const device:Promise<IDataLogger> = await Api.GetDeviceWithBarcode(req.params.ubarcode);
+   return res.status(SuccessCode.Created).json(device)
 })
 
 /*       AUTHORIZATION DEMO     */

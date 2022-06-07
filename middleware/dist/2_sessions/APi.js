@@ -21,7 +21,7 @@ class Api {
             return Trees;
         });
     }
-    static insertTree(No, TreeType, HumidityMin, HumidityMax, TempMin, TempMax, UserId, BarCode) {
+    static insertTree(No, TreeType, HumidityMin, HumidityMax, TempMin, TempMax, UserId, BarCode, ImageSrc) {
         return __awaiter(this, void 0, void 0, function* () {
             const tree = new TreeModel_1.TreeModel({
                 No,
@@ -31,7 +31,8 @@ class Api {
                 TempMin,
                 TempMax,
                 UserId,
-                BarCode
+                BarCode,
+                ImageSrc
             });
             yield tree.save();
             return true;
@@ -49,7 +50,7 @@ class Api {
             return tree;
         });
     }
-    static UpdateTree(No, TreeType, HumidityMin, HumidityMax, TempMin, TempMax, UserId, BarCode) {
+    static UpdateTree(No, TreeType, HumidityMin, HumidityMax, TempMin, TempMax, UserId, BarCode, ImageSrc) {
         return __awaiter(this, void 0, void 0, function* () {
             const tree = yield TreeModel_1.TreeModel.findOne({ "No": No });
             tree.TreeType = TreeType;
@@ -59,6 +60,7 @@ class Api {
             tree.TempMax = TempMax;
             tree.UserId = UserId;
             tree.BarCode = BarCode;
+            tree.ImageSrc = ImageSrc;
             yield tree.save();
         });
     }
@@ -102,6 +104,12 @@ class Api {
         return __awaiter(this, void 0, void 0, function* () {
             yield DataLogger_1.DataLogger.deleteOne({ "BarCode": Barcode });
             return true;
+        });
+    }
+    static GetDeviceWithBarcode(BarCode) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const device = yield DataLogger_1.DataLogger.findOne({ "BarCode": BarCode });
+            return device;
         });
     }
     // Measuerments
