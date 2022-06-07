@@ -22,6 +22,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -40,23 +49,63 @@ exports.server = server;
 const wss = new WebSocket.Server({ server });
 wss.on('connection', (ws) => {
     // connection is up, let's add a simple simple event
-    ws.on('message', (message) => {
+    ws.on('message', (message) => __awaiter(void 0, void 0, void 0, function* () {
         // log the received message and send it back to the client
-        // save data if it is data
-        // console.log('received: %s', m);
-        const test = message.split('\n', 3);
+        // split the data in 3 by newline
+        const test = message.split('\n');
+        // for showing -> will delete later
         console.log(test);
-        const wet = test[0] === "true" ? true : false;
-        const Hum = parseFloat(test[1].replace(/^\D+/g, ''));
-        const temp = parseFloat(test[2].replace(/^\D+/g, ''));
-        console.log(wet);
-        console.log(Hum);
-        console.log(temp);
-        Api_1.Api.insertMeasuerment("", "", "", Hum, temp, wet, new Date());
+        const option = test[0];
+        const barcode = test[1];
+        // check if mesuarment or warning or Want data.
+        if (option === "M") {
+            // convert value1 to boolean
+            const wet = test[2] === "true" ? true : false;
+            // convert the humidity and temp to floats
+            const Hum = parseFloat(test[3].replace(/^\D+/g, ''));
+            const temp = parseFloat(test[4].replace(/^\D+/g, ''));
+            // for showing -> will delete later
+            console.log(barcode);
+            console.log(wet);
+            console.log(Hum);
+            console.log(temp);
+            // get treeNo
+            const treeNo = yield Api_1.Api.GetSingleTrewWithBarcodes(barcode);
+            // measuermentID
+            let MeasuermentIDs = 0;
+            const MeasuermentsD = yield Api_1.Api.getMeasurements();
+            MeasuermentsD.forEach(() => {
+                MeasuermentIDs++;
+            });
+            // send data to database
+            Api_1.Api.insertMeasuerment(treeNo.No, barcode, MeasuermentIDs + "", Hum, temp, wet, new Date());
+        }
+        else if (option === "W") {
+            const WarningData = test[2];
+            console.log("Warning: " + WarningData);
+            switch (WarningData) {
+                case "ack":
+                    ws.send("ack");
+                    break;
+                case "bad":
+                    ws.send("bad");
+                    break;
+                default:
+                    break;
+            }
+        }
+        else if (option === "D") {
+            console.log("Data wanted");
+            const DataWanted = test[2];
+            if (DataWanted === "T") {
+                const tree = yield Api_1.Api.GetSingleTrewWithBarcodes(barcode);
+                ws.send(JSON.stringify(tree));
+            }
+        }
         // send back that you got the data.
-        ws.send(`Hello, you sent -> ${message}`);
-    });
+        // ws.send(`Hello, you sent -> ${message}`);
+    }));
     // send immediatly a feedback to the incoming connection
-    ws.send('Hi there, I am a WebSocket server');
+    // ws.send('Hi there, I am a WebSocket server');
 });
 //# sourceMappingURL=WebSocketServer.js.map

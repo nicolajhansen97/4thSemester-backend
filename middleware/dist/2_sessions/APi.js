@@ -10,11 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Api = void 0;
-const User_1 = require("../3_models/User");
-const Product_1 = require("../3_models/Product");
-const Encryption_1 = require("./Encryption");
 const TreeModel_1 = require("../3_models/TreeModel");
 const Measuerment_1 = require("../3_models/Measuerment");
+const DataLogger_1 = require("../3_models/DataLogger");
 class Api {
     // Tree Crud
     static getTrees() {
@@ -23,10 +21,10 @@ class Api {
             return Trees;
         });
     }
-    static insertTree(TreeType, HumidityMin, HumidityMax, TempMin, TempMax, UserId, BarCode) {
+    static insertTree(No, TreeType, HumidityMin, HumidityMax, TempMin, TempMax, UserId, BarCode) {
         return __awaiter(this, void 0, void 0, function* () {
             const tree = new TreeModel_1.TreeModel({
-                No: "1",
+                No,
                 TreeType,
                 HumidityMin,
                 HumidityMax,
@@ -41,33 +39,84 @@ class Api {
     }
     static GetsingelProduct(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const customer = yield Product_1.Product.findOne({ "no": id });
+            const customer = yield TreeModel_1.TreeModel.findOne({ "No": id });
             return customer;
         });
     }
-    static UpdateProduct(id, name, price, barCode) {
+    static GetSingleTrewWithBarcodes(BarCode) {
         return __awaiter(this, void 0, void 0, function* () {
-            const product = yield Product_1.Product.findOne({ "no": id });
-            product.name = name;
-            product.price = price;
-            product.barCode = barCode;
-            yield product.save();
+            const tree = yield TreeModel_1.TreeModel.findOne({ "BarCode": BarCode });
+            return tree;
         });
     }
-    static DeleteProduct(id) {
+    static UpdateTree(No, TreeType, HumidityMin, HumidityMax, TempMin, TempMax, UserId, BarCode) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield Product_1.Product.deleteOne({ "no": id });
+            const tree = yield TreeModel_1.TreeModel.findOne({ "No": No });
+            tree.TreeType = TreeType;
+            tree.HumidityMin = HumidityMin;
+            tree.HumidityMax = HumidityMax;
+            tree.TempMin = TempMin;
+            tree.TempMax = TempMax;
+            tree.UserId = UserId;
+            tree.BarCode = BarCode;
+            yield tree.save();
+        });
+    }
+    // Delete a tree
+    static DeleteTree(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield TreeModel_1.TreeModel.deleteOne({ "No": id });
             return true;
         });
     }
     // Datalogger
+    static getDevice() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const device = yield DataLogger_1.DataLogger.find({}, { _id: 0, __v: 0 });
+            return device;
+        });
+    }
+    static UpdateDevice(No, BarCode, RaspberryVer, Working, IsPaired) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const device = yield DataLogger_1.DataLogger.findOne({ "BarCode": No });
+            device.BarCode = BarCode,
+                device.RaspberryVer = RaspberryVer,
+                device.Working = Working,
+                device.IsPaired = IsPaired;
+            yield device.save();
+        });
+    }
+    static insertDevice(BarCode, RaspberryVer, Working) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const device = new DataLogger_1.DataLogger({
+                BarCode,
+                RaspberryVer,
+                Working,
+                IsPaired: false
+            });
+            yield device.save();
+            return true;
+        });
+    }
+    static DeleteDevice(Barcode) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield DataLogger_1.DataLogger.deleteOne({ "BarCode": Barcode });
+            return true;
+        });
+    }
     // Measuerments
+    static getMeasurements() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const measurement = yield Measuerment_1.Measuerments.find({}, { _id: 0, __v: 0 });
+            return measurement;
+        });
+    }
     static insertMeasuerment(Treeno, Barcode, MeasuermentID, Humidity, Temperature, IsSoilWet, DateOfMes) {
         return __awaiter(this, void 0, void 0, function* () {
             const measurment = new Measuerment_1.Measuerments({
-                Treeno: "1",
-                Barcode: "1001",
-                MeasuermentID: "1",
+                Treeno,
+                Barcode,
+                MeasuermentID,
                 Humidity,
                 Temperature,
                 IsSoilWet,
@@ -75,39 +124,6 @@ class Api {
             });
             yield measurment.save();
             return true;
-        });
-    }
-    static Register(userName, password, email, telephone) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const userStatus = false;
-                const user = new User_1.User({
-                    userName,
-                    password,
-                    email,
-                    telephone,
-                    userStatus
-                });
-                yield user.save();
-            }
-            catch (e) {
-                console.error('API register' + e);
-            }
-            return true;
-        });
-    }
-    static Login(userName, password) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const user = yield User_1.User.findOne({ "userName": userName });
-                if (yield Encryption_1.Encryption.compareHash(password, user.password)) {
-                    return true;
-                }
-            }
-            catch (e) {
-                console.error('login ' + e);
-            }
-            return false;
         });
     }
 }

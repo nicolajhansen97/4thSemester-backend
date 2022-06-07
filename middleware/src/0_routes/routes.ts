@@ -15,10 +15,11 @@ import bcrypt from 'bcrypt';
 import { IUser } from '../3_models/User';
 import { Encryption } from '../2_sessions/Encryption';
 import { FailureCode } from '../3_models/FailureCode';
-import { LoginEndpoint } from '../1_endpoints/LoginEndpoint';
 import { IBiddedProduct } from '../3_models/BiddedProducts';
 
 import nodemailer from 'nodemailer';
+import { IDataLogger } from '../3_models/DataLogger';
+import { IMeasuerments } from '../3_models/Measuerment';
 // const sendgridTransport = require('nodemailer-sendgrid-transport');
 
 dotenv.config({ path: 'config/middleware.env' });
@@ -48,8 +49,18 @@ routes.get('/api/Trees/:uid', async (req, res) => {
 // #3 insert record
 routes.post('/api/Trees', async (req, res) => {
    try {
+   // Get tree NO for autoincrement
+   let max = 0;
+   const allTrees = await Api.getTrees()
+   for(const o of allTrees){
+      if(Number(o.No) > max){
+         max = Number(o.No);
+      }
+   };
+   max++;
       const tree = req.body;
       Api.insertTree(
+         max.toString(),
          tree.TreeType,
          tree.HumidityMin,
          tree.HumidityMax,
@@ -66,9 +77,35 @@ routes.post('/api/Trees', async (req, res) => {
 // #4 update
 routes.put('/api/Trees/:uid', async (req, res) => {
    try {
-      const product = req.body;
-      console.log(product)
-      Api.UpdateProduct(req.params.uid, product.name, product.price, product.barCode)
+      const tree = req.body;
+      console.log(tree)
+      Api.UpdateTree(
+         req.params.uid,
+         tree.TreeType,
+         tree.HumidityMin,
+         tree.HumidityMax,
+         tree.TempMin,
+         tree.TempMax,
+         tree.UserId,
+         tree.BarCode
+         )
+      return res.status(SuccessCode.OK).json("updated")
+   } catch (e) {
+      console.error('could not update')
+   }
+})
+
+routes.put('/api/Device/:uid', async (req, res) => {
+   try {
+      const device = req.body;
+      console.log(device)
+      Api.UpdateDevice(
+         req.params.uid,
+         device.BarCode,
+         device.RaspberryVer,
+         device.Working,
+         device.IsPaired
+         )
       return res.status(SuccessCode.OK).json("updated")
    } catch (e) {
       console.error('could not update')
@@ -76,67 +113,62 @@ routes.put('/api/Trees/:uid', async (req, res) => {
 })
 // #5 delete
 routes.delete('/api/Trees/:uid', async (req, res) => {
-   Api.DeleteProduct(req.params.uid);
+   Api.DeleteTree(req.params.uid);
    return res.status(SuccessCode.Created).json("Deleted")
-}
-)
+})
 
+// Measuerment
 
+routes.get('/api/Measuerment', async (req, res) => {
+   const device: Promise<IMeasuerments[]> = await Api.getMeasurements();
+   return res.status(SuccessCode.OK).json(device);
+});
 
+routes.post('/api/Measuerment', async (req, res) => {
+   try {
+      const mes = req.body;
+      Api.insertMeasuerment(
+         mes.Treeno,
+         mes.BarCode,
+         mes.MeasuermentID,
+         mes.Humidity,
+         mes.Temperature,
+         mes.IsSoilWet,
+         mes.DateOfMes=new Date()
+      );
+      return res.status(SuccessCode.Created).json(mes);
+   } catch (e) {
+      console.error('could not insert');
+   }
+})
+
+// DEVICE
+
+routes.post('/api/Device', async (req, res) => {
+   try {
+      const device = req.body;
+      Api.insertDevice(
+         device.BarCode,
+         device.RaspberryVer,
+         true,// device.Working
+      );
+      return res.status(SuccessCode.Created).json(device);
+   } catch (e) {
+      console.error('could not insert');
+   }
+})
+
+routes.get('/api/Device', async (req, res) => {
+   const device: Promise<IDataLogger[]> = await Api.getDevice();
+   return res.status(SuccessCode.OK).json(device);
+});
+
+routes.delete('/api/Device/:ubarcode', async (req, res) => {
+   Api.DeleteDevice(req.params.ubarcode);
+   return res.status(SuccessCode.Created).json("Deleted")
+})
 
 /*       AUTHORIZATION DEMO     */
-routes.get('/value', (req, res) => {
-
-   // Just proving that the secret i accessable!!!
-   const key = process.env.TOKEN_SECRET;
-   console.log("The secret key was:" + key);
-
-   const adminToken: string = AccessToken.generateToken(Role.admin);
-
-   const decryptedAdminRole: Role = AccessToken.userRole(adminToken);
-
-   const regularToken: string = AccessToken.generateToken(Role.regular);
-
-   const decryptedRegularRole: Role = AccessToken.userRole(regularToken);
-
-   return res.status(SuccessCode.OK).json({ 'done': 'yes' });
-});
-
-routes.post('/api/logon', (req, res) => {
-   return LoginEndpoint.evaluate(req, res);
-});
-
-routes.post('/api/register', async (req, res) => {
-   try {
-      const user: IUser = req.body;
-      const hasedPSW: string = await Encryption.createHash(user.password);
-      console.log(hasedPSW);
-      Api.Register(user.userName, hasedPSW, user.email, user.telephone);
-      return res.status(SuccessCode.Created).json(user);
-   } catch (e) {
-      console.error('post' + e);
-   }
-})
-
-routes.get('/api/bid', async (req, res) => {
-   try {
-      const time: Date = new Date();
-      const BiddedProduct: IBiddedProduct = req.body;
-      // Api.Bid();
-      return res.status(SuccessCode.OK).json(time.getTime())
-   } catch (e) {
-      console.error('post' + e);
-   }
-})
-
-// route just for admins
-routes.get('/customers', (req, res) => {
-   try {
-      return AbstractEndpoint.produceResponse(SuccessCode.Created, Role.anonymous, Resource.customer, req, res);
-   } catch {
-      console.error('customer get');
-   }
-});
 
 routes.get('/encrypt', async (req, res) => {
    const salt: number = 17; // The number of hashing rounds

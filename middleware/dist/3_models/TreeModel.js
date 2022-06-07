@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TreeModel = void 0;
 const mongoose_1 = require("mongoose");
 const ProductSchema = new mongoose_1.Schema({
-    No: { type: String, required: true },
+    No: { type: String, required: false },
     TreeType: { type: String, required: true },
     HumidityMin: { type: Number, required: true },
     HumidityMax: { type: Number, required: true },

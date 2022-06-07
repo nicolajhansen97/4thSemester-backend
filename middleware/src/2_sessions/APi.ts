@@ -5,6 +5,7 @@ import { Product, IProduct } from '../3_models/Product';
 import { Encryption } from './Encryption';
 import { TreeModel, ITreeModel } from '../3_models/TreeModel';
 import { Measuerments, IMeasuerments } from '../3_models/Measuerment';
+import { IDataLogger, DataLogger } from '../3_models/DataLogger';
 class Api {
     // Tree Crud
     static async getTrees(): Promise<any> {
@@ -13,6 +14,7 @@ class Api {
     }
 
     static async insertTree(
+        No: string,
         TreeType: string,
         HumidityMin: number,
         HumidityMax: number,
@@ -22,7 +24,7 @@ class Api {
         BarCode: string
     ): Promise<boolean> {
         const tree: ITreeModel = new TreeModel({
-            No: "1",
+            No,
             TreeType,
             HumidityMin,
             HumidityMax,
@@ -36,26 +38,77 @@ class Api {
     }
 
     static async GetsingelProduct(id: string): Promise<any> {
-        const customer: IProduct = await Product.findOne({ "no": id })
+        const customer: ITreeModel = await TreeModel.findOne({ "No": id })
         return customer;
     }
 
-    static async UpdateProduct(id: string, name: string, price: number, barCode: string): Promise<any> {
-        const product = await Product.findOne({ "no": id })
-        product.name = name;
-        product.price = price;
-        product.barCode = barCode;
-        await product.save();
+    static async GetSingleTrewWithBarcodes(BarCode: string): Promise<any> {
+        const tree: ITreeModel = await TreeModel.findOne({ "BarCode": BarCode })
+        return tree;
     }
 
-    static async DeleteProduct(id: string): Promise<any> {
-        await Product.deleteOne({ "no": id })
-        return true
+    static async UpdateTree(No: string, TreeType: string, HumidityMin: number, HumidityMax: number, TempMin: number, TempMax: number,
+        UserId: string, BarCode: string): Promise<any> {
+        const tree = await TreeModel.findOne({ "No": No })
+        tree.TreeType = TreeType;
+        tree.HumidityMin = HumidityMin;
+        tree.HumidityMax = HumidityMax;
+        tree.TempMin = TempMin;
+        tree.TempMax = TempMax;
+        tree.UserId = UserId;
+        tree.BarCode = BarCode;
+        await tree.save();
     }
+
+
+    // Delete a tree
+    static async DeleteTree(id: string): Promise<any> {
+    await TreeModel.deleteOne({ "No": id })
+    return true
+}
 
     // Datalogger
 
+	static async getDevice(): Promise<any> {
+        const device: IDataLogger[] = await DataLogger.find({}, { _id: 0, __v: 0 });
+        return device;
+    }
+
+    static async UpdateDevice(No: string, BarCode: string, RaspberryVer: string, Working: boolean, IsPaired: boolean): Promise<any> {
+        const device = await DataLogger.findOne({ "BarCode": No })
+        device.BarCode = BarCode,
+        device.RaspberryVer = RaspberryVer,
+        device.Working = Working,
+        device.IsPaired = IsPaired
+        await device.save();
+    }
+
+    static async insertDevice(
+        BarCode: string,
+        RaspberryVer: string,
+        Working: boolean
+    ):Promise<boolean>{
+        const device: IDataLogger = new DataLogger({
+            BarCode,
+            RaspberryVer,
+            Working,
+            IsPaired: false
+        });
+        await device.save();
+        return true;
+    }
+
+    static async DeleteDevice(Barcode: string): Promise<any> {
+        await DataLogger.deleteOne({ "BarCode": Barcode })
+        return true
+    }
+
     // Measuerments
+
+    static async getMeasurements(): Promise<any> {
+        const measurement: IMeasuerments[] = await Measuerments.find({}, { _id: 0, __v: 0 });
+        return measurement;
+    }
 
     static async insertMeasuerment(
         Treeno: string,
@@ -67,9 +120,9 @@ class Api {
         DateOfMes: Date
     ): Promise<boolean> {
         const measurment: IMeasuerments = new Measuerments({
-            Treeno:"1",
-            Barcode:"1001",
-            MeasuermentID:"1",
+            Treeno,
+            Barcode,
+            MeasuermentID,
             Humidity,
             Temperature,
             IsSoilWet,
@@ -78,45 +131,5 @@ class Api {
         await measurment.save();
         return true;
     }
-
-
-    static async Register(userName: string, password: string, email: string, telephone: string): Promise<boolean> {
-        try {
-            const userStatus: boolean = false;
-            const user: IUser = new User({
-                userName,
-                password,
-                email,
-                telephone,
-                userStatus
-            });
-            await user.save();
-        } catch (e) {
-            console.error('API register' + e);
-        }
-        return true;
-    }
-
-    static async Login(userName: string, password: string): Promise<boolean> {
-        try {
-            const user: IUser = await User.findOne({ "userName": userName });
-            if (await Encryption.compareHash(password, user.password)) {
-                return true;
-            }
-
-        } catch (e) {
-            console.error('login ' + e)
-        }
-        return false;
-    }
-    /*
-    static async Bid():Promise<boolean>{
-        try{
-            return true;
-        }catch(e){
-
-        }
-    }
-    */
 }
 export { Api }

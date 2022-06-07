@@ -1,17 +1,19 @@
 import {model, Schema, Model, Document} from 'mongoose';
 
 interface IDataLogger extends Document {
-    Barcode: string;
+    BarCode: string;
     RaspberryVer: string;
     Working: boolean;
+    IsPaired: boolean;
 }
 
 const ProductSchema: Schema = new Schema({
-    Barcode: {type: String, required: true},
+    BarCode: {type: String, required: true},
     RaspberryVer: {type: String, required: true},
-    Woring: {type: Boolean, required: true}
+    Working: {type: Boolean, required: true},
+    IsPaired: {type: Boolean, requied: true}
 });
 
-const DataLogger: Model<IDataLogger> = model('Product', ProductSchema);
+const DataLogger: Model<IDataLogger> = model('DataLoggers', ProductSchema);
 
 export {DataLogger,IDataLogger}
