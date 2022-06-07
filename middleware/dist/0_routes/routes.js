@@ -100,6 +100,17 @@ routes.put('/api/Trees/:uid', (req, res) => __awaiter(void 0, void 0, void 0, fu
         console.error('could not update');
     }
 }));
+routes.put('/api/Device/:uid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const device = req.body;
+        console.log(device);
+        Api_1.Api.UpdateDevice(req.params.uid, device.BarCode, device.RaspberryVer, device.Working, device.IsPaired);
+        return res.status(SuccessCode_1.SuccessCode.OK).json("updated");
+    }
+    catch (e) {
+        console.error('could not update');
+    }
+}));
 // #5 delete
 routes.delete('/api/Trees/:uid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     Api_1.Api.DeleteTree(req.params.uid);

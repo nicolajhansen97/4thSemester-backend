@@ -74,6 +74,15 @@ class Api {
         return device;
     }
 
+    static async UpdateDevice(No: string, BarCode: string, RaspberryVer: string, Working: boolean, IsPaired: boolean): Promise<any> {
+        const device = await DataLogger.findOne({ "BarCode": No })
+        device.BarCode = BarCode,
+        device.RaspberryVer = RaspberryVer,
+        device.Working = Working,
+        device.IsPaired = IsPaired
+        await device.save();
+    }
+
     static async insertDevice(
         BarCode: string,
         RaspberryVer: string,
@@ -82,7 +91,8 @@ class Api {
         const device: IDataLogger = new DataLogger({
             BarCode,
             RaspberryVer,
-            Working
+            Working,
+            IsPaired: false
         });
         await device.save();
         return true;

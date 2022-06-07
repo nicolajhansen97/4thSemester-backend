@@ -93,6 +93,23 @@ routes.put('/api/Trees/:uid', async (req, res) => {
       console.error('could not update')
    }
 })
+
+routes.put('/api/Device/:uid', async (req, res) => {
+   try {
+      const device = req.body;
+      console.log(device)
+      Api.UpdateDevice(
+         req.params.uid,
+         device.BarCode,
+         device.RaspberryVer,
+         device.Working,
+         device.IsPaired
+         )
+      return res.status(SuccessCode.OK).json("updated")
+   } catch (e) {
+      console.error('could not update')
+   }
+})
 // #5 delete
 routes.delete('/api/Trees/:uid', async (req, res) => {
    Api.DeleteTree(req.params.uid);

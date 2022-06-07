@@ -76,12 +76,23 @@ class Api {
             return device;
         });
     }
+    static UpdateDevice(No, BarCode, RaspberryVer, Working, IsPaired) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const device = yield DataLogger_1.DataLogger.findOne({ "BarCode": No });
+            device.BarCode = BarCode,
+                device.RaspberryVer = RaspberryVer,
+                device.Working = Working,
+                device.IsPaired = IsPaired;
+            yield device.save();
+        });
+    }
     static insertDevice(BarCode, RaspberryVer, Working) {
         return __awaiter(this, void 0, void 0, function* () {
             const device = new DataLogger_1.DataLogger({
                 BarCode,
                 RaspberryVer,
-                Working
+                Working,
+                IsPaired: false
             });
             yield device.save();
             return true;
