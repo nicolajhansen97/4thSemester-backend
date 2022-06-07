@@ -98,6 +98,12 @@ class Api {
             return true;
         });
     }
+    static DeleteDevice(Barcode) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield DataLogger_1.DataLogger.deleteOne({ "BarCode": Barcode });
+            return true;
+        });
+    }
     // Measuerments
     static getMeasurements() {
         return __awaiter(this, void 0, void 0, function* () {
