@@ -49,8 +49,18 @@ routes.get('/api/Trees/:uid', async (req, res) => {
 // #3 insert record
 routes.post('/api/Trees', async (req, res) => {
    try {
+   // Get tree NO for autoincrement
+   let max = 0;
+   const allTrees = await Api.getTrees()
+   for(const o of allTrees){
+      if(Number(o.No) > max){
+         max = Number(o.No);
+      }
+   };
+   max++;
       const tree = req.body;
       Api.insertTree(
+         max.toString(),
          tree.TreeType,
          tree.HumidityMin,
          tree.HumidityMax,
@@ -78,6 +88,23 @@ routes.put('/api/Trees/:uid', async (req, res) => {
          tree.TempMax,
          tree.UserId,
          tree.BarCode
+         )
+      return res.status(SuccessCode.OK).json("updated")
+   } catch (e) {
+      console.error('could not update')
+   }
+})
+
+routes.put('/api/Device/:uid', async (req, res) => {
+   try {
+      const device = req.body;
+      console.log(device)
+      Api.UpdateDevice(
+         req.params.uid,
+         device.BarCode,
+         device.RaspberryVer,
+         device.Working,
+         device.IsPaired
          )
       return res.status(SuccessCode.OK).json("updated")
    } catch (e) {

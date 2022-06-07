@@ -70,8 +70,18 @@ routes.get('/api/Trees/:uid', (req, res) => __awaiter(void 0, void 0, void 0, fu
 // #3 insert record
 routes.post('/api/Trees', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        // Get tree NO for autoincrement
+        let max = 0;
+        const allTrees = yield Api_1.Api.getTrees();
+        for (const o of allTrees) {
+            if (Number(o.No) > max) {
+                max = Number(o.No);
+            }
+        }
+        ;
+        max++;
         const tree = req.body;
-        Api_1.Api.insertTree(tree.TreeType, tree.HumidityMin, tree.HumidityMax, tree.TempMin, tree.TempMax, tree.UserId, tree.BarCode);
+        Api_1.Api.insertTree(max.toString(), tree.TreeType, tree.HumidityMin, tree.HumidityMax, tree.TempMin, tree.TempMax, tree.UserId, tree.BarCode);
         return res.status(SuccessCode_1.SuccessCode.Created).json(tree);
     }
     catch (e) {
@@ -84,6 +94,17 @@ routes.put('/api/Trees/:uid', (req, res) => __awaiter(void 0, void 0, void 0, fu
         const tree = req.body;
         console.log(tree);
         Api_1.Api.UpdateTree(req.params.uid, tree.TreeType, tree.HumidityMin, tree.HumidityMax, tree.TempMin, tree.TempMax, tree.UserId, tree.BarCode);
+        return res.status(SuccessCode_1.SuccessCode.OK).json("updated");
+    }
+    catch (e) {
+        console.error('could not update');
+    }
+}));
+routes.put('/api/Device/:uid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const device = req.body;
+        console.log(device);
+        Api_1.Api.UpdateDevice(req.params.uid, device.BarCode, device.RaspberryVer, device.Working, device.IsPaired);
         return res.status(SuccessCode_1.SuccessCode.OK).json("updated");
     }
     catch (e) {
