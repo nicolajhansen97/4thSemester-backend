@@ -20,6 +20,7 @@ import { IBiddedProduct } from '../3_models/BiddedProducts';
 import nodemailer from 'nodemailer';
 import { IDataLogger } from '../3_models/DataLogger';
 import { IMeasuerments } from '../3_models/Measuerment';
+import { IWarningData } from '../3_models/WarningData';
 // const sendgridTransport = require('nodemailer-sendgrid-transport');
 
 dotenv.config({ path: 'config/middleware.env' });
@@ -30,6 +31,12 @@ routes.use(cors());
 routes.use(bodyParser.json());
 routes.use(express.static('public'));
 const urlencode = bodyParser.urlencoded({ extended: true });
+
+routes.set('view engine', 'ejs') // testing
+
+routes.get('/test',(req, res)=> {
+   res.render('index');
+}) // testing
 
 /*
    The routes to using REST, just emmulating the data
@@ -164,8 +171,7 @@ routes.put('/api/Device/:uid', async (req, res) => {
          req.params.uid,
          device.BarCode,
          device.RaspberryVer,
-         device.Working,
-         device.IsPaired
+         device.Working
          )
       return res.status(SuccessCode.OK).json("updated")
    } catch (e) {
@@ -176,6 +182,28 @@ routes.put('/api/Device/:uid', async (req, res) => {
 routes.get('/api/Device/:ubarcode', async (req, res) => {
    const device:Promise<IDataLogger> = await Api.GetDeviceWithBarcode(req.params.ubarcode);
    return res.status(SuccessCode.Created).json(device)
+})
+
+// get warning
+routes.get('/api/Warning', async (req, res) => {
+   const warning: Promise<IWarningData[]> = await Api.getWarnings()
+   return res.status(SuccessCode.OK).json(warning);
+});
+//update Warning
+routes.put('/api/Warning/:uid', async (req, res) => {
+   try {
+      const warning = req.body;
+      console.log(warning)
+      Api.UpdateWarning(
+         req.params.uid,
+         warning.BarCode,
+         warning.Warning,
+         warning.IsHandled
+         )
+      return res.status(SuccessCode.OK).json("updated")
+   } catch (e) {
+      console.error('could not update')
+   }
 })
 
 /*       AUTHORIZATION DEMO     */

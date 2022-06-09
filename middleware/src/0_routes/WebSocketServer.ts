@@ -52,7 +52,7 @@ wss.on('connection', (ws: WebSocket) => {
             });
             // send data to database
             Api.insertMeasuerment(treeNo.No, barcode, MeasuermentIDs + "", Hum, temp, wet, new Date());
-        }else if (option==="W"){
+        } else if (option === "W") {
             const WarningData = test[2]
             console.log("Warning: " + WarningData)
 
@@ -60,20 +60,37 @@ wss.on('connection', (ws: WebSocket) => {
                 case "ack":
                     ws.send("ack")
                     break;
-                case "bad":
-                    ws.send("bad")
+                case "deviceBroken":
+                    ws.send("deviceBroken")
                     break;
                 default:
+                    ws.send("ack")
                     break;
             }
-        }else if (option==="D"){
+            //get higest number
+            let max = 0;
+            const allWarnings = await Api.getWarnings()
+            for (const o of allWarnings) {
+                if (Number(o.WarNo) > max) {
+                    max = Number(o.WarNo);
+                }
+            };
+            max++;
+            //send warning to database
+            Api.insertWarning(max.toString(), barcode, WarningData, false);
+
+        } else if (option === "D") {
             console.log("Data wanted")
 
             const DataWanted = test[2]
-            if (DataWanted==="T"){
+            if (DataWanted === "T") {
                 const tree = await Api.GetSingleTrewWithBarcodes(barcode);
                 ws.send(JSON.stringify(tree))
             }
+        }else if (option === "C"){
+            console.log("Device Wanted")
+            const device = await Api.GetDeviceWithBarcode(barcode)
+            ws.send(JSON.stringify(device))
         }
 
         // send back that you got the data.

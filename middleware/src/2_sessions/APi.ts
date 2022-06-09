@@ -7,6 +7,7 @@ import { TreeModel, ITreeModel } from '../3_models/TreeModel';
 import { Measuerments, IMeasuerments } from '../3_models/Measuerment';
 import { IDataLogger, DataLogger } from '../3_models/DataLogger';
 import { StringMap } from 'ts-jest';
+import { IWarningData, WarningData } from '../3_models/WarningData';
 class Api {
     // Tree Crud
     static async getTrees(): Promise<any> {
@@ -78,12 +79,11 @@ class Api {
         return device;
     }
 
-    static async UpdateDevice(No: string, BarCode: string, RaspberryVer: string, Working: boolean, IsPaired: boolean): Promise<any> {
+    static async UpdateDevice(No: string, BarCode: string, RaspberryVer: string, Working: boolean): Promise<any> {
         const device = await DataLogger.findOne({ "BarCode": No })
         device.BarCode = BarCode,
         device.RaspberryVer = RaspberryVer,
         device.Working = Working,
-        device.IsPaired = IsPaired
         await device.save();
     }
 
@@ -95,8 +95,7 @@ class Api {
         const device: IDataLogger = new DataLogger({
             BarCode,
             RaspberryVer,
-            Working,
-            IsPaired: false
+            Working
         });
         await device.save();
         return true;
@@ -140,5 +139,37 @@ class Api {
         await measurment.save();
         return true;
     }
+
+    //Warning
+
+    static async insertWarning(
+        WarNo: string,
+        BarCode: string,
+        Warning: string,
+        IsHandled: boolean
+    ): Promise<boolean> {
+        const warning: IWarningData = new WarningData({
+            WarNo,
+            BarCode,
+            Warning,
+            IsHandled
+        });
+        await warning.save();
+        return true;
+    }
+
+    static async getWarnings(): Promise<any> {
+        const warning: IWarningData[] = await WarningData.find({}, { _id: 0, __v: 0 });
+        return warning;
+    }
+
+    static async UpdateWarning(No: string, BarCode: string,Warning:string, IsHandled: boolean): Promise<any> {
+        const warning = await WarningData.findOne({ "WarNo": No })
+        warning.BarCode = BarCode,
+        warning.Warning = Warning,
+        warning.IsHandled = IsHandled
+        await warning.save();
+    }
+
 }
 export { Api }

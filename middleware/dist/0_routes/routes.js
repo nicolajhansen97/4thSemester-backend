@@ -53,6 +53,10 @@ routes.use((0, cors_1.default)());
 routes.use(bodyParser.json());
 routes.use(express_1.default.static('public'));
 const urlencode = bodyParser.urlencoded({ extended: true });
+routes.set('view engine', 'ejs'); // testing
+routes.get('/test', (req, res) => {
+    res.render('index');
+}); // testing
 /*
    The routes to using REST, just emmulating the data
 */
