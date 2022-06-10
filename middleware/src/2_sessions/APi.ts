@@ -1,13 +1,10 @@
-import { User } from '../3_models/User';
-import { IUser } from '../3_models/User';
-import { nodeModuleNameResolver } from 'typescript';
-import { Product, IProduct } from '../3_models/Product';
-import { Encryption } from './Encryption';
 import { TreeModel, ITreeModel } from '../3_models/TreeModel';
 import { Measuerments, IMeasuerments } from '../3_models/Measuerment';
 import { IDataLogger, DataLogger } from '../3_models/DataLogger';
-import { StringMap } from 'ts-jest';
 import { IWarningData, WarningData } from '../3_models/WarningData';
+import { ITest, Test } from '../3_models/test';
+
+
 class Api {
     // Tree Crud
     static async getTrees(): Promise<any> {
@@ -24,7 +21,7 @@ class Api {
         TempMax: number,
         UserId: string,
         BarCode: string,
-        ImageSrc: Buffer
+        Image: Buffer
     ): Promise<boolean> {
         const tree: ITreeModel = new TreeModel({
             No,
@@ -35,8 +32,9 @@ class Api {
             TempMax,
             UserId,
             BarCode,
-            ImageSrc
+            Image
         });
+        console.log(Image);
         await tree.save();
         return true;
     }
@@ -52,7 +50,7 @@ class Api {
     }
 
     static async UpdateTree(No: string, TreeType: string, HumidityMin: number, HumidityMax: number, TempMin: number, TempMax: number,
-        UserId: string, BarCode: string, ImageSrc: Buffer): Promise<any> {
+        UserId: string, BarCode: string, Image: Buffer): Promise<any> {
         const tree = await TreeModel.findOne({ "No": No })
         tree.TreeType = TreeType;
         tree.HumidityMin = HumidityMin;
@@ -61,20 +59,20 @@ class Api {
         tree.TempMax = TempMax;
         tree.UserId = UserId;
         tree.BarCode = BarCode;
-        tree.ImageSrc = ImageSrc;
+        tree.Image = Image;
         await tree.save();
     }
 
 
     // Delete a tree
     static async DeleteTree(id: string): Promise<any> {
-    await TreeModel.deleteOne({ "No": id })
-    return true
-}
+        await TreeModel.deleteOne({ "No": id })
+        return true
+    }
 
     // Datalogger
 
-	static async getDevice(): Promise<any> {
+    static async getDevice(): Promise<any> {
         const device: IDataLogger[] = await DataLogger.find({}, { _id: 0, __v: 0 });
         return device;
     }
@@ -82,16 +80,16 @@ class Api {
     static async UpdateDevice(No: string, BarCode: string, RaspberryVer: string, Working: boolean): Promise<any> {
         const device = await DataLogger.findOne({ "BarCode": No })
         device.BarCode = BarCode,
-        device.RaspberryVer = RaspberryVer,
-        device.Working = Working,
-        await device.save();
+            device.RaspberryVer = RaspberryVer,
+            device.Working = Working,
+            await device.save();
     }
 
     static async insertDevice(
         BarCode: string,
         RaspberryVer: string,
         Working: boolean
-    ):Promise<boolean>{
+    ): Promise<boolean> {
         const device: IDataLogger = new DataLogger({
             BarCode,
             RaspberryVer,
@@ -163,13 +161,31 @@ class Api {
         return warning;
     }
 
-    static async UpdateWarning(No: string, BarCode: string,Warning:string, IsHandled: boolean): Promise<any> {
+    static async UpdateWarning(No: string, BarCode: string, Warning: string, IsHandled: boolean): Promise<any> {
         const warning = await WarningData.findOne({ "WarNo": No })
         warning.BarCode = BarCode,
-        warning.Warning = Warning,
-        warning.IsHandled = IsHandled
+            warning.Warning = Warning,
+            warning.IsHandled = IsHandled
         await warning.save();
     }
 
+    static async getTest(): Promise<any> {
+        const d: ITest[] = await Test.find({}, { _id: 0, __v: 0 });
+        return d
+    }
+
+    static async insertTest(
+        name: string,
+        price: string,
+        Image: Object
+    ): Promise<boolean> {
+        const warning: ITest = new Test({
+            name,
+            price,
+            Image
+        });
+        await warning.save();
+        return true;
+    }
 }
 export { Api }

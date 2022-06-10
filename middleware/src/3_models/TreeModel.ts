@@ -9,7 +9,7 @@ interface ITreeModel extends Document {
     TempMax: number;
     UserId: string;
     BarCode: string;
-    ImageSrc: Buffer
+    Image: Buffer;
 }
 
 const ProductSchema: Schema = new Schema({
@@ -21,7 +21,7 @@ const ProductSchema: Schema = new Schema({
   TempMax : {type: Number, required: true },
   UserId : {type: String, required: true },
   BarCode: { type: String, required: true },
-  ImageSrc: {type: Buffer, required: false}
+  Image: { type: Buffer, required: false}
 });
 
 const TreeModel: Model<ITreeModel> = model('TreeModel', ProductSchema);
