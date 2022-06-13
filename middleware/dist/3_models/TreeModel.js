@@ -10,7 +10,8 @@ const ProductSchema = new mongoose_1.Schema({
     TempMin: { type: Number, required: true },
     TempMax: { type: Number, required: true },
     UserId: { type: String, required: true },
-    BarCode: { type: String, required: true }
+    BarCode: { type: String, required: true },
+    ImageSrc: { type: Buffer, required: false }
 });
 const TreeModel = (0, mongoose_1.model)('TreeModel', ProductSchema);
 exports.TreeModel = TreeModel;

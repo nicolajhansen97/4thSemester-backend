@@ -53,6 +53,10 @@ routes.use((0, cors_1.default)());
 routes.use(bodyParser.json());
 routes.use(express_1.default.static('public'));
 const urlencode = bodyParser.urlencoded({ extended: true });
+routes.set('view engine', 'ejs'); // testing
+routes.get('/test', (req, res) => {
+    res.render('index');
+}); // testing
 /*
    The routes to using REST, just emmulating the data
 */
@@ -81,7 +85,7 @@ routes.post('/api/Trees', (req, res) => __awaiter(void 0, void 0, void 0, functi
         ;
         max++;
         const tree = req.body;
-        Api_1.Api.insertTree(max.toString(), tree.TreeType, tree.HumidityMin, tree.HumidityMax, tree.TempMin, tree.TempMax, tree.UserId, tree.BarCode);
+        Api_1.Api.insertTree(max.toString(), tree.TreeType, tree.HumidityMin, tree.HumidityMax, tree.TempMin, tree.TempMax, tree.UserId, tree.BarCode, tree.ImageSrc);
         return res.status(SuccessCode_1.SuccessCode.Created).json(tree);
     }
     catch (e) {
@@ -93,25 +97,14 @@ routes.put('/api/Trees/:uid', (req, res) => __awaiter(void 0, void 0, void 0, fu
     try {
         const tree = req.body;
         console.log(tree);
-        Api_1.Api.UpdateTree(req.params.uid, tree.TreeType, tree.HumidityMin, tree.HumidityMax, tree.TempMin, tree.TempMax, tree.UserId, tree.BarCode);
+        Api_1.Api.UpdateTree(req.params.uid, tree.TreeType, tree.HumidityMin, tree.HumidityMax, tree.TempMin, tree.TempMax, tree.UserId, tree.BarCode, tree.ImageSrc);
         return res.status(SuccessCode_1.SuccessCode.OK).json("updated");
     }
     catch (e) {
         console.error('could not update');
     }
 }));
-routes.put('/api/Device/:uid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const device = req.body;
-        console.log(device);
-        Api_1.Api.UpdateDevice(req.params.uid, device.BarCode, device.RaspberryVer, device.Working, device.IsPaired);
-        return res.status(SuccessCode_1.SuccessCode.OK).json("updated");
-    }
-    catch (e) {
-        console.error('could not update');
-    }
-}));
-// #5 delete
+// delete
 routes.delete('/api/Trees/:uid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     Api_1.Api.DeleteTree(req.params.uid);
     return res.status(SuccessCode_1.SuccessCode.Created).json("Deleted");
@@ -132,6 +125,7 @@ routes.post('/api/Measuerment', (req, res) => __awaiter(void 0, void 0, void 0, 
     }
 }));
 // DEVICE
+// create
 routes.post('/api/Device', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const device = req.body;
@@ -142,13 +136,32 @@ routes.post('/api/Device', (req, res) => __awaiter(void 0, void 0, void 0, funct
         console.error('could not insert');
     }
 }));
+// get
 routes.get('/api/Device', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const device = yield Api_1.Api.getDevice();
     return res.status(SuccessCode_1.SuccessCode.OK).json(device);
 }));
+// delete
 routes.delete('/api/Device/:ubarcode', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     Api_1.Api.DeleteDevice(req.params.ubarcode);
     return res.status(SuccessCode_1.SuccessCode.Created).json("Deleted");
+}));
+// update
+routes.put('/api/Device/:uid', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const device = req.body;
+        console.log(device);
+        Api_1.Api.UpdateDevice(req.params.uid, device.BarCode, device.RaspberryVer, device.Working, device.IsPaired);
+        return res.status(SuccessCode_1.SuccessCode.OK).json("updated");
+    }
+    catch (e) {
+        console.error('could not update');
+    }
+}));
+// get with barcode
+routes.get('/api/Device/:ubarcode', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const device = yield Api_1.Api.GetDeviceWithBarcode(req.params.ubarcode);
+    return res.status(SuccessCode_1.SuccessCode.Created).json(device);
 }));
 /*       AUTHORIZATION DEMO     */
 routes.get('/encrypt', (req, res) => __awaiter(void 0, void 0, void 0, function* () {

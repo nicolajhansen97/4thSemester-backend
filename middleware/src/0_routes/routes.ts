@@ -2,25 +2,15 @@ import express from 'express';
 import * as bodyParser from 'body-parser';
 import cors from 'cors';
 import * as dotenv from 'dotenv';
-import { AccessToken } from '../2_sessions/AccessToken';
-import { Role } from '../3_models/Role';
-
-import { AbstractEndpoint } from '../1_endpoints/AbstractEndpoint';
 import { SuccessCode } from '../3_models/SuccessCode';
-import { Resource } from '../3_models/Resource';
 import { DB } from '../2_sessions/DB';
-import { IProduct } from '../3_models/Product';
 import { Api } from '../2_sessions/Api';
-import bcrypt from 'bcrypt';
-import { IUser } from '../3_models/User';
-import { Encryption } from '../2_sessions/Encryption';
-import { FailureCode } from '../3_models/FailureCode';
-import { IBiddedProduct } from '../3_models/BiddedProducts';
-
-import nodemailer from 'nodemailer';
 import { IDataLogger } from '../3_models/DataLogger';
 import { IMeasuerments } from '../3_models/Measuerment';
-// const sendgridTransport = require('nodemailer-sendgrid-transport');
+import { IWarningData } from '../3_models/WarningData';
+import { ITest, Test } from '../3_models/test';
+import multer from 'multer'
+import { ITreeModel } from '../3_models/TreeModel';
 
 dotenv.config({ path: 'config/middleware.env' });
 
@@ -28,36 +18,84 @@ const routes = express();
 
 routes.use(cors());
 routes.use(bodyParser.json());
-routes.use(express.static('public'));
-const urlencode = bodyParser.urlencoded({ extended: true });
+//routes.use(express.static('public'));
+routes.use(express.static('uploads'))
 
-/*
-   The routes to using REST, just emmulating the data
-*/
 DB.connect();
 
-// #1 getAll
+/* Image Setup Code for routes */
+const urlencode = bodyParser.urlencoded({ extended: true });
+
+routes.set('view engine', 'ejs') // testing
+
+const multerStorage = multer.diskStorage({
+   destination: function (req, file, cb) {
+      cb(null, './uploads/')
+   },
+
+   filename: function (req: any, file: any, cb: any) {
+      cb(null, file.originalname)
+   }
+});
+
+const fileFilter = (req: any, file: any, cb: any) => {
+   if (file.mimetype === "image/jpg" ||
+      file.mimetype === "image/jpeg" ||
+      file.mimetype === "image/png") {
+
+      cb(null, true);
+   } else {
+      cb(new Error("Image uploaded is not of type jpg/jpeg or png"), false);
+   }
+}
+
+const upload = multer({ storage: multerStorage, fileFilter: fileFilter })
+
+/* Image Testing Routes */
+
+routes.post('/api/upload', upload.array('images', 5), async (req, res, next) => {
+   let newProduct = new Test({
+      name: req.body.name,
+      price: req.body.price,
+      images: req.files
+   }); await newProduct.save();
+   res.send(newProduct);
+});
+
+routes.get('/api/upload', async (req, res) => {
+   const d = await Api.getTest();
+   res.render('index');
+});
+
+routes.get('/api/upload2', async (req, res) => {
+   const test: Promise<ITest[]> = await Api.getTest()
+   return res.status(SuccessCode.OK).json(test);
+})
+
+/*       Tree Routes      */
+
+//Get Trees
 routes.get('/api/Trees', async (req, res) => {
-   const products: Promise<IProduct[]> = await Api.getTrees();
+   const products: Promise<ITreeModel[]> = await Api.getTrees();
    return res.status(SuccessCode.OK).json(products);
 });
-// #2 getById
+//Get Tree by id
 routes.get('/api/Trees/:uid', async (req, res) => {
-   const product: Promise<IProduct> = await Api.GetsingelProduct(req.params.uid);
+   const product: Promise<ITreeModel> = await Api.GetsingelTree(req.params.uid);
    return res.status(SuccessCode.OK).json(product);
 });
-// #3 insert record
-routes.post('/api/Trees', async (req, res) => {
+//Create Tree
+routes.post('/api/Trees', upload.single('file'), async (req, res, next) => {
    try {
-   // Get tree NO for autoincrement
-   let max = 0;
-   const allTrees = await Api.getTrees()
-   for(const o of allTrees){
-      if(Number(o.No) > max){
-         max = Number(o.No);
-      }
-   };
-   max++;
+      // Get tree NO for autoincrement
+      let max = 0;
+      const allTrees = await Api.getTrees()
+      for (const o of allTrees) {
+         if (Number(o.No) > max) {
+            max = Number(o.No);
+         }
+      };
+      max++;
       const tree = req.body;
       Api.insertTree(
          max.toString(),
@@ -67,14 +105,15 @@ routes.post('/api/Trees', async (req, res) => {
          tree.TempMin,
          tree.TempMax,
          tree.UserId,
-         tree.BarCode
+         tree.BarCode,
+         tree.Image
       );
       return res.status(SuccessCode.Created).json(tree);
    } catch (e) {
-      console.error('could not insert');
+      console.error('could not insert' + e);
    }
 })
-// #4 update
+//Update Tree
 routes.put('/api/Trees/:uid', async (req, res) => {
    try {
       const tree = req.body;
@@ -87,43 +126,29 @@ routes.put('/api/Trees/:uid', async (req, res) => {
          tree.TempMin,
          tree.TempMax,
          tree.UserId,
-         tree.BarCode
-         )
+         tree.BarCode,
+         tree.ImageSrc
+      )
       return res.status(SuccessCode.OK).json("updated")
    } catch (e) {
       console.error('could not update')
    }
 })
 
-routes.put('/api/Device/:uid', async (req, res) => {
-   try {
-      const device = req.body;
-      console.log(device)
-      Api.UpdateDevice(
-         req.params.uid,
-         device.BarCode,
-         device.RaspberryVer,
-         device.Working,
-         device.IsPaired
-         )
-      return res.status(SuccessCode.OK).json("updated")
-   } catch (e) {
-      console.error('could not update')
-   }
-})
-// #5 delete
+//Delete Tree
 routes.delete('/api/Trees/:uid', async (req, res) => {
    Api.DeleteTree(req.params.uid);
    return res.status(SuccessCode.Created).json("Deleted")
 })
 
-// Measuerment
+/*       Measuerment Routes      */
 
+//Get Measuerments
 routes.get('/api/Measuerment', async (req, res) => {
    const device: Promise<IMeasuerments[]> = await Api.getMeasurements();
    return res.status(SuccessCode.OK).json(device);
 });
-
+//Create Measuerments
 routes.post('/api/Measuerment', async (req, res) => {
    try {
       const mes = req.body;
@@ -134,16 +159,16 @@ routes.post('/api/Measuerment', async (req, res) => {
          mes.Humidity,
          mes.Temperature,
          mes.IsSoilWet,
-         mes.DateOfMes=new Date()
+         mes.DateOfMes = new Date()
       );
       return res.status(SuccessCode.Created).json(mes);
    } catch (e) {
       console.error('could not insert');
    }
 })
+/*       Device Routes      */
 
-// DEVICE
-
+//Create Device
 routes.post('/api/Device', async (req, res) => {
    try {
       const device = req.body;
@@ -157,62 +182,63 @@ routes.post('/api/Device', async (req, res) => {
       console.error('could not insert');
    }
 })
-
+//Get Devices
 routes.get('/api/Device', async (req, res) => {
    const device: Promise<IDataLogger[]> = await Api.getDevice();
    return res.status(SuccessCode.OK).json(device);
 });
-
+//Delete Device
 routes.delete('/api/Device/:ubarcode', async (req, res) => {
    Api.DeleteDevice(req.params.ubarcode);
    return res.status(SuccessCode.Created).json("Deleted")
 })
-
-/*       AUTHORIZATION DEMO     */
-
-routes.get('/encrypt', async (req, res) => {
-   const salt: number = 17; // The number of hashing rounds
-   const orginalText: string = "this text must be hidden";
-   const encryptedText: string = await bcrypt.hash(orginalText, salt);
-
-   console.log("Orginal: " + orginalText);
-   console.log("Encrypted: " + encryptedText);
-   if (await bcrypt.compare("this text must be hidden", encryptedText)) {
-      console.log('psw accepted')
-   } else {
-      console.log('psw not accepted')
+//Update Device
+routes.put('/api/Device/:uid', async (req, res) => {
+   try {
+      const device = req.body;
+      console.log(device)
+      Api.UpdateDevice(
+         req.params.uid,
+         device.BarCode,
+         device.RaspberryVer,
+         device.Working
+      )
+      return res.status(SuccessCode.OK).json("updated")
+   } catch (e) {
+      console.error('could not update')
    }
-   res.status(200).json("done")
+})
+//Get Device with barcode
+routes.get('/api/Device/:ubarcode', async (req, res) => {
+   const device: Promise<IDataLogger> = await Api.GetDeviceWithBarcode(req.params.ubarcode);
+   return res.status(SuccessCode.Created).json(device)
 })
 
+/*       WARNING Routes     */
 
-routes.get('/sendmail', async (req, res) => {
-   const testAccount = await nodemailer.createTestAccount();
-
-   // Transporter object using SMTP transport
-   const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false, // true for 465, false for other ports
-      auth: {
-         user: process.env.GMAIL_USER,
-         pass: process.env.PASSWORD,
-      },
-   });
-
-   // sending mail with defined transport object
-   const info = await transporter.sendMail({
-      from: '"Bobby Bricks" <bricksbobby123@gmail.com>', // sender address
-      to: "bricksbobby123@gmail.com", //
-      subject: "lololol", // subject line
-      text: "Bla bla bla", // text body
-      // html: "<p> some html </p>" // html in the body
-   });
-
-   console.log('sent message :', info.messageId);
-   res.status(201).json('sent message');
+//Get Warnings
+routes.get('/api/Warning', async (req, res) => {
+   const warning: Promise<IWarningData[]> = await Api.getWarnings()
+   return res.status(SuccessCode.OK).json(warning);
 });
+//Update Warning
+routes.put('/api/Warning/:uid', async (req, res) => {
+   try {
+      const warning = req.body;
+      console.log(warning)
+      Api.UpdateWarning(
+         req.params.uid,
+         warning.BarCode,
+         warning.Warning,
+         warning.IsHandled
+      )
+      return res.status(SuccessCode.OK).json("updated")
+   } catch (e) {
+      console.error('could not update')
+   }
+})
 
+/* DEFUALT ROUTE */
 
 // the default (all other non-existing routes)
 routes.get('*', (req, res) => {
