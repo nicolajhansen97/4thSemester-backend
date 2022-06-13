@@ -6,12 +6,14 @@ import { ITest, Test } from '../3_models/test';
 
 
 class Api {
-    // Tree Crud
+    /*          TREE APIS's         */
+    
+    //Get Trees Api
     static async getTrees(): Promise<any> {
         const Trees: ITreeModel[] = await TreeModel.find({}, { _id: 0, __v: 0 });
         return Trees;
     }
-
+    //Create Tree api 
     static async insertTree(
         No: string,
         TreeType: string,
@@ -38,17 +40,17 @@ class Api {
         await tree.save();
         return true;
     }
-
-    static async GetsingelProduct(id: string): Promise<any> {
-        const customer: ITreeModel = await TreeModel.findOne({ "No": id })
-        return customer;
+    //Get Tree with id api
+    static async GetsingelTree(id: string): Promise<any> {
+        const tree: ITreeModel = await TreeModel.findOne({ "No": id })
+        return tree;
     }
-
-    static async GetSingleTrewWithBarcodes(BarCode: string): Promise<any> {
+    //Get Tree with barcode api
+    static async GetSingleTreeWithBarcodes(BarCode: string): Promise<any> {
         const tree: ITreeModel = await TreeModel.findOne({ "BarCode": BarCode })
         return tree;
     }
-
+    //Update Tree Api
     static async UpdateTree(No: string, TreeType: string, HumidityMin: number, HumidityMax: number, TempMin: number, TempMax: number,
         UserId: string, BarCode: string, Image: Buffer): Promise<any> {
         const tree = await TreeModel.findOne({ "No": No })
@@ -63,20 +65,20 @@ class Api {
         await tree.save();
     }
 
-
-    // Delete a tree
+    // Delete Tree api
     static async DeleteTree(id: string): Promise<any> {
         await TreeModel.deleteOne({ "No": id })
         return true
     }
 
-    // Datalogger
+    /*          Device APIS's         */
 
+    //Get deices api
     static async getDevice(): Promise<any> {
         const device: IDataLogger[] = await DataLogger.find({}, { _id: 0, __v: 0 });
         return device;
     }
-
+    //Update Device api
     static async UpdateDevice(No: string, BarCode: string, RaspberryVer: string, Working: boolean): Promise<any> {
         const device = await DataLogger.findOne({ "BarCode": No })
         device.BarCode = BarCode,
@@ -84,7 +86,7 @@ class Api {
             device.Working = Working,
             await device.save();
     }
-
+    //Create Device api
     static async insertDevice(
         BarCode: string,
         RaspberryVer: string,
@@ -98,24 +100,26 @@ class Api {
         await device.save();
         return true;
     }
-
+    //Delete Device api
     static async DeleteDevice(Barcode: string): Promise<any> {
         await DataLogger.deleteOne({ "BarCode": Barcode })
         return true
     }
-
+    //Get Device with Barcode api
     static async GetDeviceWithBarcode(BarCode: string): Promise<any> {
         const device: IDataLogger = await DataLogger.findOne({ "BarCode": BarCode })
         return device;
     }
 
-    // Measuerments
+    /*          Measuerment APIS's         */
 
+    //Get Measuerments api
     static async getMeasurements(): Promise<any> {
         const measurement: IMeasuerments[] = await Measuerments.find({}, { _id: 0, __v: 0 });
         return measurement;
     }
 
+    //Create Measuerment
     static async insertMeasuerment(
         Treeno: string,
         Barcode: string,
@@ -138,8 +142,9 @@ class Api {
         return true;
     }
 
-    //Warning
+    /*          Warning APIS's         */
 
+    //Create Warning api
     static async insertWarning(
         WarNo: string,
         BarCode: string,
@@ -155,12 +160,12 @@ class Api {
         await warning.save();
         return true;
     }
-
+    //Get Warnings api
     static async getWarnings(): Promise<any> {
         const warning: IWarningData[] = await WarningData.find({}, { _id: 0, __v: 0 });
         return warning;
     }
-
+    //Update Warning
     static async UpdateWarning(No: string, BarCode: string, Warning: string, IsHandled: boolean): Promise<any> {
         const warning = await WarningData.findOne({ "WarNo": No })
         warning.BarCode = BarCode,
@@ -168,6 +173,8 @@ class Api {
             warning.IsHandled = IsHandled
         await warning.save();
     }
+
+     /*          image Test APIS's         */
 
     static async getTest(): Promise<any> {
         const d: ITest[] = await Test.find({}, { _id: 0, __v: 0 });

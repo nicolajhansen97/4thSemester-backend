@@ -16,44 +16,36 @@ wss.on('connection', (ws: WebSocket) => {
 
     // connection is up, let's add a simple simple event
     ws.on('message', async (message: string) => {
-
-        // log the received message and send it back to the client
         // split the data in 3 by newline
-        const test = message.split('\n')
-
-        // for showing -> will delete later
-        console.log(test)
-
-        const option = test[0]
-        const barcode = test[1]
+        const datamessage = message.split('\n')
+        const option = datamessage[0]
+        const barcode = datamessage[1]
 
         // check if mesuarment or warning or Want data.
         if (option === "M") {
             // convert value1 to boolean
-            const wet = test[2] === "true" ? true : false;
+            const wet = datamessage[2] === "true" ? true : false;
             // convert the humidity and temp to floats
-            const Hum = parseFloat(test[3].replace(/^\D+/g, ''))
-            const temp = parseFloat(test[4].replace(/^\D+/g, ''))
-
-            // for showing -> will delete later
-            console.log(barcode)
-            console.log(wet)
-            console.log(Hum)
-            console.log(temp)
+            const Hum = parseFloat(datamessage[3].replace(/^\D+/g, ''))
+            const temp = parseFloat(datamessage[4].replace(/^\D+/g, ''))
 
             // get treeNo
-            const treeNo = await Api.GetSingleTrewWithBarcodes(barcode);
+            const treeNo = await Api.GetSingleTreeWithBarcodes(barcode);
 
             // measuermentID
             let MeasuermentIDs = 0
-            const MeasuermentsD = await Api.getMeasurements()
-            MeasuermentsD.forEach(() => {
-                MeasuermentIDs++
-            });
+            const MeasuermentsData = await Api.getMeasurements()
+            for (const M of MeasuermentsData) {
+                if(Number(M.MeasuermentID) > MeasuermentIDs) {
+                    MeasuermentIDs = Number(M.MeasuermentID)
+                }
+            }
+            MeasuermentIDs++
+
             // send data to database
             Api.insertMeasuerment(treeNo.No, barcode, MeasuermentIDs + "", Hum, temp, wet, new Date());
         } else if (option === "W") {
-            const WarningData = test[2]
+            const WarningData = datamessage[2]
             console.log("Warning: " + WarningData)
 
             switch (WarningData) {
@@ -82,9 +74,9 @@ wss.on('connection', (ws: WebSocket) => {
         } else if (option === "D") {
             console.log("Data wanted")
 
-            const DataWanted = test[2]
+            const DataWanted = datamessage[2]
             if (DataWanted === "T") {
-                const tree = await Api.GetSingleTrewWithBarcodes(barcode);
+                const tree = await Api.GetSingleTreeWithBarcodes(barcode);
                 ws.send(JSON.stringify(tree))
             }
         }else if (option === "C"){
@@ -92,14 +84,7 @@ wss.on('connection', (ws: WebSocket) => {
             const device = await Api.GetDeviceWithBarcode(barcode)
             ws.send(JSON.stringify(device))
         }
-
-        // send back that you got the data.
-        // ws.send(`Hello, you sent -> ${message}`);
-
     });
-
-    // send immediatly a feedback to the incoming connection
-    // ws.send('Hi there, I am a WebSocket server');
 });
 
 export { server }
