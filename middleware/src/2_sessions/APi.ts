@@ -126,5 +126,11 @@ class Api {
         await measurment.save();
         return true;
     }
+
+    // Gardner CRUD
+    static async getGardner(): Promise<any> {
+        const device: IDataLogger[] = await DataLogger.find({}, { _id: 0, __v: 0 });
+        return device;
+    }
 }
 export { Api }
