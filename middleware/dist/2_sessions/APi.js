@@ -134,6 +134,13 @@ class Api {
             return true;
         });
     }
+    // Gardner CRUD
+    static getGardner() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const device = yield DataLogger_1.DataLogger.find({}, { _id: 0, __v: 0 });
+            return device;
+        });
+    }
 }
 exports.Api = Api;
 //# sourceMappingURL=Api.js.map
